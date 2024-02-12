@@ -1,0 +1,6 @@
+{
+  "commands.string-utilities.string.too_few_arguments": "参数太少",
+  "commands.string-utilities.string.invalid_char_array": "不正确的字符数组：%s",
+  "commands.string-utilities.string.unexpected_type": "不正确的参数类型：%s，期待为：%s",
+  "argument.string-utilities.integer.not_in_range": "整数 %s 不在范围 %s 和 %s 中"
+}

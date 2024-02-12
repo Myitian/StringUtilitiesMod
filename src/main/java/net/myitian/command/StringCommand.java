@@ -370,9 +370,9 @@ public class StringCommand {
                             int begin = StringExtension.convertAndCheckIndexWider(getNbtValueAsInt(scc.sources[1]), src);
                             String result;
                             if (scc.sources.length > 2) {
-                                int end = StringExtension.convertAndCheckIndexWider(getNbtValueAsInt(scc.sources[2]), src);
-                                StringExtension.checkInt(end, begin, src.length());
-                                result = src.substring(begin, end);
+                                int end = getNbtValueAsInt(scc.sources[2]);
+                                StringExtension.checkInt(end, src.length() - begin, -1, begin, src.length());
+                                result = src.substring(begin, StringExtension.convertIndex(end, src));
                             } else {
                                 result = src.substring(begin);
                             }
