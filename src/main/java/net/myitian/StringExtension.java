@@ -1,7 +1,9 @@
 package net.myitian;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.myitian.command.StringCommand;
+import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
+import com.mojang.brigadier.exceptions.Dynamic3CommandExceptionType;
+import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +13,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StringExtension {
+    public static final Dynamic2CommandExceptionType INTEGER_TOO_LOW =
+            new Dynamic2CommandExceptionType((found, min) -> new TranslatableComponent("argument.integer.low", min, found));
+    public static final Dynamic2CommandExceptionType INTEGER_TOO_HIGH =
+            new Dynamic2CommandExceptionType((found, max) -> new TranslatableComponent("argument.integer.big", max, found));
+    public static final Dynamic3CommandExceptionType INTEGER_NOT_IN_RANGE_2 =
+            new Dynamic3CommandExceptionType((found, range0, range1) -> new TranslatableComponent("argument.string-utilities.integer.not_in_range", found, range0, range1));
+
     private static final Pattern SPECIAL_REGEX_CHARS = Pattern.compile("[{}()\\[\\].+*?^$\\\\|]");
 
     private static int codePointAt(char[] value, int index, int end) {
@@ -126,7 +135,7 @@ public class StringExtension {
 
     public static void checkNotBelowZero(int i) throws CommandSyntaxException {
         if (i < 0) {
-            throw StringCommand.INTEGER_TOO_LOW.create(i, 0);
+            throw INTEGER_TOO_LOW.create(i, 0);
         }
     }
 
@@ -226,9 +235,23 @@ public class StringExtension {
 
     public static void checkInt(int value, int min, int max) throws CommandSyntaxException {
         if (value < min) {
-            throw StringCommand.INTEGER_TOO_LOW.create(value, min);
+            throw INTEGER_TOO_LOW.create(value, min);
         } else if (value > max) {
-            throw StringCommand.INTEGER_TOO_HIGH.create(value, max);
+            throw INTEGER_TOO_HIGH.create(value, max);
+        }
+    }
+
+    public static void checkInt(int value, int range0min, int range0max, int range1min, int range1max) throws CommandSyntaxException {
+        int min = Math.min(range0min, range1min);
+        int max = Math.max(range0max, range1max);
+        if (value < min) {
+            throw INTEGER_TOO_LOW.create(value, min);
+        } else if (value > max) {
+            throw INTEGER_TOO_HIGH.create(value, max);
+        } else if ((value > range0max && value < range1min) || (value > range1max && value < range0min)) {
+            throw INTEGER_NOT_IN_RANGE_2.create(value,
+                    "[" + range0min + ".." + range0max + "]",
+                    "[" + range1min + ".." + range1max + "]");
         }
     }
 }
