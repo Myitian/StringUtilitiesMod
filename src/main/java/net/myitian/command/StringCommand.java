@@ -15,50 +15,47 @@ import net.minecraft.server.command.DataCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Pair;
+import net.myitian.StringExtension;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.regex.MatchResult;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
-import static net.minecraft.command.argument.NbtElementArgumentType.nbtElement;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class StringCommand {
-    private static final Dynamic2CommandExceptionType INTEGER_TOO_LOW =
+    public static final Dynamic2CommandExceptionType INTEGER_TOO_LOW =
             new Dynamic2CommandExceptionType((found, min) -> new TranslatableText("argument.integer.low", min, found));
-    private static final Dynamic2CommandExceptionType INTEGER_TOO_HIGH =
+    public static final Dynamic2CommandExceptionType INTEGER_TOO_HIGH =
             new Dynamic2CommandExceptionType((found, max) -> new TranslatableText("argument.integer.big", max, found));
-    private static final DynamicCommandExceptionType EXPECTED_LIST_EXCEPTION =
+    public static final DynamicCommandExceptionType EXPECTED_LIST_EXCEPTION =
             new DynamicCommandExceptionType(nbt -> new TranslatableText("commands.data.modify.expected_list", nbt));
-    private static final SimpleCommandExceptionType ARGUMENT_TOO_FEW_EXCEPTION = // [Should not show]
+    public static final SimpleCommandExceptionType TOO_FEW_ARGUMENT_EXCEPTION = // [Should not show]
             new SimpleCommandExceptionType(new TranslatableText("commands.string-utilities.string.too_few_arguments"));
-    private static final DynamicCommandExceptionType INVALID_CHAR_ARRAY_EXCEPTION = // Invalid char array: %s
+    public static final DynamicCommandExceptionType INVALID_CHAR_ARRAY_EXCEPTION = // Invalid char array: %s
             new DynamicCommandExceptionType(name -> new TranslatableText("commands.string-utilities.string.invalid_char_array", name));
-    private static final DynamicCommandExceptionType EXPECTED_STRING_LIST_EXCEPTION = // Invalid argument type: %s, expected String
+    public static final DynamicCommandExceptionType EXPECTED_STRING_LIST_EXCEPTION = // Invalid argument type: %s, expected String
             new DynamicCommandExceptionType(name -> new TranslatableText("commands.string-utilities.string.unexpected_type", name, NbtString.TYPE.getCrashReportName()));
-    private static final DynamicCommandExceptionType EXPECTED_INT_ARRAY_EXCEPTION = // Invalid argument type: %s, expected IntArray
+    public static final DynamicCommandExceptionType EXPECTED_INT_ARRAY_EXCEPTION = // Invalid argument type: %s, expected IntArray
             new DynamicCommandExceptionType(name -> new TranslatableText("commands.string-utilities.string.unexpected_type", name, NbtIntArray.TYPE.getCrashReportName()));
-    private static final DynamicCommandExceptionType EXPECTED_INT_EXCEPTION = // Invalid argument type: %s, expected Int
+    public static final DynamicCommandExceptionType EXPECTED_INT_EXCEPTION = // Invalid argument type: %s, expected Int
             new DynamicCommandExceptionType(name -> new TranslatableText("commands.string-utilities.string.unexpected_type", name, NbtInt.TYPE.getCrashReportName()));
-
-    private static final Pattern SPECIAL_REGEX_CHARS = Pattern.compile("[{}()\\[\\].+*?^$\\\\|]");
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
         register(dispatcher);
     }
+
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> stringCommand = literal("string")
                 .requires(source -> source.hasPermissionLevel(2))
                 .then(addOneInZeroOutArgument("isBlank", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
                     String src = getNbtValueAsString(scc.sources[0]);
-                    return toInt(src.isBlank());
+                    return toInt(StringExtension.isBlank(src));
                 }))
                 .then(addOneInZeroOutArgument("isEmpty", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
@@ -99,7 +96,7 @@ public class StringCommand {
                 .then(addOneInOneOutArgument("escapeRegex", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
                     String src = getNbtValueAsString(scc.sources[0]);
-                    setTarget(ctx, scc, NbtString.of(escapeRegex(src)));
+                    setTarget(ctx, scc, NbtString.of(StringExtension.escapeRegex(src)));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOutArgument("toLowerCase", (ctx, scc) -> {
@@ -117,19 +114,19 @@ public class StringCommand {
                 .then(addOneInOneOutArgument("strip", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
                     String src = getNbtValueAsString(scc.sources[0]);
-                    setTarget(ctx, scc, NbtString.of(src.strip()));
+                    setTarget(ctx, scc, NbtString.of(StringExtension.strip(src)));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOutArgument("stripLeading", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
                     String src = getNbtValueAsString(scc.sources[0]);
-                    setTarget(ctx, scc, NbtString.of(src.stripLeading()));
+                    setTarget(ctx, scc, NbtString.of(StringExtension.stripLeading(src)));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOutArgument("stripTrailing", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
                     String src = getNbtValueAsString(scc.sources[0]);
-                    setTarget(ctx, scc, NbtString.of(src.stripTrailing()));
+                    setTarget(ctx, scc, NbtString.of(StringExtension.stripTrailing(src)));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOutArgument("toCharArray", (ctx, scc) -> {
@@ -167,13 +164,11 @@ public class StringCommand {
                         result = "";
                     } else {
                         int size = list.size();
-                        var sb = new StringBuilder();
-                        if (list.get(0) instanceof AbstractNbtNumber num) {
-                            sb.appendCodePoint(num.intValue());
-                        } else {
+                        StringBuilder sb = new StringBuilder();
+                        if (!(list.get(0) instanceof AbstractNbtNumber)) {
                             throw EXPECTED_INT_ARRAY_EXCEPTION.create(element.getNbtType().getCrashReportName());
                         }
-                        for (int i = 1; i < size; i++) {
+                        for (int i = 0; i < size; i++) {
                             sb.appendCodePoint(((AbstractNbtNumber) list.get(i)).intValue());
                         }
                         result = sb.toString();
@@ -208,7 +203,7 @@ public class StringCommand {
                             checkArgumentCount(scc.sources, 1);
                             var src = getNbtValueAsString(scc.sources[0]);
                             Set<Character> trimChars = createTrimCharsSet(scc);
-                            setTarget(ctx, scc, NbtString.of(trim(src, trimChars)));
+                            setTarget(ctx, scc, NbtString.of(StringExtension.trim(src, trimChars)));
                             return SINGLE_SUCCESS;
                         }))
                 .then(addOneInOneOptionalInOneOutArgument("trimStart",
@@ -220,7 +215,7 @@ public class StringCommand {
                             checkArgumentCount(scc.sources, 1);
                             var src = getNbtValueAsString(scc.sources[0]);
                             Set<Character> trimChars = createTrimCharsSet(scc);
-                            setTarget(ctx, scc, NbtString.of(trimStart(src, trimChars)));
+                            setTarget(ctx, scc, NbtString.of(StringExtension.trimStart(src, trimChars)));
                             return SINGLE_SUCCESS;
                         }))
                 .then(addOneInOneOptionalInOneOutArgument("trimEnd",
@@ -232,7 +227,7 @@ public class StringCommand {
                             checkArgumentCount(scc.sources, 1);
                             var src = getNbtValueAsString(scc.sources[0]);
                             Set<Character> trimChars = createTrimCharsSet(scc);
-                            setTarget(ctx, scc, NbtString.of(trimEnd(src, trimChars)));
+                            setTarget(ctx, scc, NbtString.of(StringExtension.trimEnd(src, trimChars)));
                             return SINGLE_SUCCESS;
                         }))
                 .then(addTwoInOneOutArgument("at",
@@ -243,8 +238,7 @@ public class StringCommand {
                         (ctx, scc) -> {
                             checkArgumentCount(scc.sources, 2);
                             var src = getNbtValueAsString(scc.sources[0]);
-                            var i = convertIndex(getNbtValueAsInt(scc.sources[1]), src);
-                            checkIndex(i, src);
+                            int i = StringExtension.convertAndCheckIndex(getNbtValueAsInt(scc.sources[1]), src);
                             setTarget(ctx, scc, NbtString.of(Character.toString(src.charAt(i))));
                             return SINGLE_SUCCESS;
                         }))
@@ -257,8 +251,8 @@ public class StringCommand {
                             checkArgumentCount(scc.sources, 2);
                             var src = getNbtValueAsString(scc.sources[0]);
                             var r = getNbtValueAsInt(scc.sources[1]);
-                            checkNotBelowZero(r);
-                            setTarget(ctx, scc, NbtString.of(src.repeat(r)));
+                            StringExtension.checkNotBelowZero(r);
+                            setTarget(ctx, scc, NbtString.of(StringExtension.repeat(src, r)));
                             return SINGLE_SUCCESS;
                         }))
                 .then(addTwoInOneOutArgument("matchesAll",
@@ -273,12 +267,12 @@ public class StringCommand {
                             var regex = Pattern.compile(p);
                             var matcher = regex.matcher(src);
                             var list = new NbtList();
-                            list.addAll(matcher.results().map(r -> {
+                            for (MatchResult r : StringExtension.matchesAll(matcher)) {
                                 var nbt = new NbtCompound();
                                 nbt.putInt("start", r.start());
                                 nbt.putInt("end", r.end());
-                                return nbt;
-                            }).toList());
+                                list.add(nbt);
+                            }
                             setTarget(ctx, scc, list);
                             return list.size();
                         }))
@@ -294,7 +288,7 @@ public class StringCommand {
                             var regex = Pattern.compile(p);
                             var matcher = regex.matcher(src);
                             var list = new NbtList();
-                            for (var r : matchesAll(matcher)) {
+                            for (MatchResult r : StringExtension.matchesAllFully(matcher)) {
                                 var nbt = new NbtCompound();
                                 nbt.putInt("start", r.start());
                                 nbt.putInt("end", r.end());
@@ -368,13 +362,12 @@ public class StringCommand {
                         (ctx, scc) -> {
                             checkArgumentCount(scc.sources, 2);
                             var src = getNbtValueAsString(scc.sources[0]);
-                            int begin = convertIndex(getNbtValueAsInt(scc.sources[1]), src);
-                            checkIndex(begin, src);
+                            int begin = StringExtension.convertAndCheckIndexWider(getNbtValueAsInt(scc.sources[1]), src);
                             String result;
                             if (scc.sources.length > 2) {
-                                int end = convertIndex(getNbtValueAsInt(scc.sources[2]), src);
-                                checkInt(end, begin, src.length() - 1);
-                                result = src.substring(begin, end);
+                                int end = getNbtValueAsInt(scc.sources[2]);
+                                StringExtension.checkInt(end, src.length() - begin, -1, begin, src.length());
+                                result = src.substring(begin, StringExtension.convertIndex(end, src));
                             } else {
                                 result = src.substring(begin);
                             }
@@ -391,12 +384,11 @@ public class StringCommand {
                         (ctx, scc) -> {
                             checkArgumentCount(scc.sources, 2);
                             var src = getNbtValueAsString(scc.sources[0]);
-                            int begin = convertIndex(getNbtValueAsInt(scc.sources[1]), src);
-                            checkIndex(begin, src);
+                            int begin = StringExtension.convertAndCheckIndexWider(getNbtValueAsInt(scc.sources[1]), src);
                             String result;
                             if (scc.sources.length > 2) {
-                                int length = convertIndex(getNbtValueAsInt(scc.sources[2]), src);
-                                checkInt(length, 0, src.length() - begin);
+                                int length = getNbtValueAsInt(scc.sources[2]);
+                                StringExtension.checkInt(length, 0, src.length() - begin);
                                 result = src.substring(begin, begin + length);
                             } else {
                                 result = src.substring(begin);
@@ -417,8 +409,8 @@ public class StringCommand {
                             var sep = getNbtValueAsString(scc.sources[1]);
                             String[] result;
                             if (scc.sources.length > 2) {
-                                var i = getNbtValueAsInt(scc.sources[2]);
-                                checkNotBelowZero(i);
+                                int i = getNbtValueAsInt(scc.sources[2]);
+                                StringExtension.checkNotBelowZero(i);
                                 result = src.split(sep, i);
                             } else {
                                 result = src.split(sep);
@@ -442,7 +434,7 @@ public class StringCommand {
                             String src = getNbtValueAsString(scc.sources[0]);
                             String sub = getNbtValueAsString(scc.sources[1]);
                             if (scc.sources.length > 2) {
-                                return src.indexOf(sub, convertIndex(getNbtValueAsInt(scc.sources[2]), src));
+                                return src.indexOf(sub, StringExtension.convertAndCheckIndexWider(getNbtValueAsInt(scc.sources[2]), src));
                             } else {
                                 return src.indexOf(sub);
                             }
@@ -459,7 +451,7 @@ public class StringCommand {
                             String src = getNbtValueAsString(scc.sources[0]);
                             String sub = getNbtValueAsString(scc.sources[1]);
                             if (scc.sources.length > 2) {
-                                return src.lastIndexOf(sub, convertIndex(getNbtValueAsInt(scc.sources[2]), src));
+                                return src.lastIndexOf(sub, StringExtension.convertAndCheckIndexWider(getNbtValueAsInt(scc.sources[2]), src));
                             } else {
                                 return src.lastIndexOf(sub);
                             }
@@ -477,7 +469,7 @@ public class StringCommand {
                             var prefix = getNbtValueAsString(scc.sources[1]);
                             boolean result;
                             if (scc.sources.length > 2) {
-                                result = src.startsWith(prefix, convertIndex(getNbtValueAsInt(scc.sources[2]), src));
+                                result = src.startsWith(prefix, StringExtension.convertAndCheckIndexWider(getNbtValueAsInt(scc.sources[2]), src));
                             } else {
                                 result = src.startsWith(prefix);
                             }
@@ -587,105 +579,13 @@ public class StringCommand {
         return bool ? 1 : 0;
     }
 
-    public static int convertIndex(int index, String s) {
-        return index >= 0 ? index : s.length() + index;
-    }
-
-    public static String escapeRegex(String s) {
-        return SPECIAL_REGEX_CHARS.matcher(s).replaceAll("\\\\$0");
-    }
-
-    public static void checkIndex(int index, CharSequence count) throws CommandSyntaxException {
-        if (index < 0) {
-            throw INTEGER_TOO_LOW.create(index, 0);
-        } else if (index >= count.length()) {
-            throw INTEGER_TOO_HIGH.create(index, count.length());
-        }
-    }
-
-    public static void checkInt(int index, int min, int max) throws CommandSyntaxException {
-        if (index < min) {
-            throw INTEGER_TOO_LOW.create(index, min);
-        } else if (index > max) {
-            throw INTEGER_TOO_HIGH.create(index, max);
-        }
-    }
-
-    public static void checkNotBelowZero(int i) throws CommandSyntaxException {
-        if (i < 0) {
-            throw INTEGER_TOO_LOW.create(i, 0);
-        }
-    }
-
-    public static String trim(String s, Set<Character> trimChars) {
-        if (trimChars == null) {
-            return s.trim();
-        } else {
-            int begin = firstNotTrimmedPos(s, trimChars);
-            int end = lastNotTrimmedPos(s, trimChars);
-            if (begin >= end) {
-                return "";
-            } else {
-                return s.substring(begin, end);
-            }
-        }
-    }
-
-    public static String trimStart(String s, Set<Character> trimChars) {
-        return s.substring(firstNotTrimmedPos(s, trimChars));
-    }
-
-    public static String trimEnd(String s, Set<Character> trimChars) {
-        return s.substring(0, lastNotTrimmedPos(s, trimChars) + 1);
-    }
-
-    public static int firstNotTrimmedPos(String s, Set<Character> trimChars) {
-        int len = s.length();
-        int i = 0;
-        if (trimChars == null) {
-            while (i < len && s.charAt(i) <= ' ') {
-                i++;
-            }
-        } else {
-            while (i < len && trimChars.contains(s.charAt(i))) {
-                i++;
-            }
-        }
-        return i;
-    }
-
-    public static int lastNotTrimmedPos(String s, Set<Character> trimChars) {
-        int len = s.length();
-        int i = len - 1;
-        if (trimChars == null) {
-            while (i >= 0 && s.charAt(i) <= ' ') {
-                i--;
-            }
-        } else {
-            while (i >= 0 && trimChars.contains(s.charAt(i))) {
-                i--;
-            }
-        }
-        return i;
-    }
-
-    public static ArrayList<MatchResult> matchesAll(Matcher matcher) {
-        int start = 0;
-        var results = new ArrayList<MatchResult>();
-        while (matcher.find(start)) {
-            results.add(matcher.toMatchResult());
-            start = matcher.start() + 1;
-        }
-        return results;
-    }
-
     private static int nullablePairArraySize(Pair<?, ?>[] array) {
         return array == null ? -1 : array.length;
     }
 
     private static void checkArgumentCount(Pair<?, ?>[] sources, int count) throws CommandSyntaxException {
         if (nullablePairArraySize(sources) < count) {
-            throw ARGUMENT_TOO_FEW_EXCEPTION.create();
+            throw TOO_FEW_ARGUMENT_EXCEPTION.create();
         }
     }
 
@@ -744,7 +644,7 @@ public class StringCommand {
                                     new FromWithPathSourceGetter(source, sourcePathName)))));
         }
         argument.then(literal("value")
-                .then(argumentAdder.apply(argument(valueName, nbtElement()), new ValueSourceGetter(valueName))));
+                .then(argumentAdder.apply(argument(valueName, NbtElementArgumentType.nbtElement()), new ValueSourceGetter(valueName))));
         return argument;
     }
 

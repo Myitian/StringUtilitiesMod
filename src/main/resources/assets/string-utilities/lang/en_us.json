@@ -1,5 +1,6 @@
 {
   "commands.string-utilities.string.too_few_arguments": "Too few arguments",
   "commands.string-utilities.string.invalid_char_array": "Invalid char array: %s",
-  "commands.string-utilities.string.unexpected_type": "Invalid argument type: %s, expected %s"
+  "commands.string-utilities.string.unexpected_type": "Invalid argument type: %s, expected %s",
+  "argument.string-utilities.integer.not_in_range": "Integer %s is not in range %s and %s"
 }
