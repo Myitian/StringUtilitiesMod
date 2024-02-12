@@ -65,7 +65,7 @@ public class StringCommand {
                 .then(addOneInOneOutArgument("toString", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
                     String src = getNbtValueAsString(scc.sources[0]);
-                    setTarget(ctx, scc, NbtString.of(src));
+                    setTarget(ctx, scc, createNbtString(src));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOutArgument("escape", (ctx, scc) -> {
@@ -79,49 +79,49 @@ public class StringCommand {
                         }
                         stringBuilder.append(d);
                     }
-                    setTarget(ctx, scc, NbtString.of(stringBuilder.toString()));
+                    setTarget(ctx, scc, createNbtString(stringBuilder.toString()));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOutArgument("escapeNbt", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
                     String src = getNbtValueAsString(scc.sources[0]);
-                    setTarget(ctx, scc, NbtString.of(NbtString.escape(src)));
+                    setTarget(ctx, scc, createNbtString(NbtString.escape(src)));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOutArgument("escapeRegex", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
                     String src = getNbtValueAsString(scc.sources[0]);
-                    setTarget(ctx, scc, NbtString.of(StringExtension.escapeRegex(src)));
+                    setTarget(ctx, scc, createNbtString(StringExtension.escapeRegex(src)));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOutArgument("toLowerCase", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
                     String src = getNbtValueAsString(scc.sources[0]);
-                    setTarget(ctx, scc, NbtString.of(src.toLowerCase()));
+                    setTarget(ctx, scc, createNbtString(src.toLowerCase()));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOutArgument("toUpperCase", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
                     String src = getNbtValueAsString(scc.sources[0]);
-                    setTarget(ctx, scc, NbtString.of(src.toUpperCase()));
+                    setTarget(ctx, scc, createNbtString(src.toUpperCase()));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOutArgument("strip", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
                     String src = getNbtValueAsString(scc.sources[0]);
-                    setTarget(ctx, scc, NbtString.of(StringExtension.strip(src)));
+                    setTarget(ctx, scc, createNbtString(StringExtension.strip(src)));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOutArgument("stripLeading", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
                     String src = getNbtValueAsString(scc.sources[0]);
-                    setTarget(ctx, scc, NbtString.of(StringExtension.stripLeading(src)));
+                    setTarget(ctx, scc, createNbtString(StringExtension.stripLeading(src)));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOutArgument("stripTrailing", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
                     String src = getNbtValueAsString(scc.sources[0]);
-                    setTarget(ctx, scc, NbtString.of(StringExtension.stripTrailing(src)));
+                    setTarget(ctx, scc, createNbtString(StringExtension.stripTrailing(src)));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOutArgument("toCharArray", (ctx, scc) -> {
@@ -129,7 +129,7 @@ public class StringCommand {
                     String src = getNbtValueAsString(scc.sources[0]);
                     NbtList list = new NbtList();
                     for (char c : src.toCharArray()) {
-                        list.add(NbtString.of(Character.toString(c)));
+                        list.add(createNbtString(Character.toString(c)));
                     }
                     setTarget(ctx, scc, list);
                     return SINGLE_SUCCESS;
@@ -168,7 +168,7 @@ public class StringCommand {
                         }
                         result = sb.toString();
                     }
-                    setTarget(ctx, scc, NbtString.of(result));
+                    setTarget(ctx, scc, createNbtString(result));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOutArgument("concat", (ctx, scc) -> {
@@ -186,7 +186,7 @@ public class StringCommand {
                     for (String string : strings) {
                         sb.append(string);
                     }
-                    setTarget(ctx, scc, NbtString.of(sb.toString()));
+                    setTarget(ctx, scc, createNbtString(sb.toString()));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOptionalInOneOutArgument("trim",
@@ -198,7 +198,7 @@ public class StringCommand {
                             checkArgumentCount(scc.sources, 1);
                             var src = getNbtValueAsString(scc.sources[0]);
                             Set<Character> trimChars = createTrimCharsSet(scc);
-                            setTarget(ctx, scc, NbtString.of(StringExtension.trim(src, trimChars)));
+                            setTarget(ctx, scc, createNbtString(StringExtension.trim(src, trimChars)));
                             return SINGLE_SUCCESS;
                         }))
                 .then(addOneInOneOptionalInOneOutArgument("trimStart",
@@ -210,7 +210,7 @@ public class StringCommand {
                             checkArgumentCount(scc.sources, 1);
                             var src = getNbtValueAsString(scc.sources[0]);
                             Set<Character> trimChars = createTrimCharsSet(scc);
-                            setTarget(ctx, scc, NbtString.of(StringExtension.trimStart(src, trimChars)));
+                            setTarget(ctx, scc, createNbtString(StringExtension.trimStart(src, trimChars)));
                             return SINGLE_SUCCESS;
                         }))
                 .then(addOneInOneOptionalInOneOutArgument("trimEnd",
@@ -222,7 +222,7 @@ public class StringCommand {
                             checkArgumentCount(scc.sources, 1);
                             var src = getNbtValueAsString(scc.sources[0]);
                             Set<Character> trimChars = createTrimCharsSet(scc);
-                            setTarget(ctx, scc, NbtString.of(StringExtension.trimEnd(src, trimChars)));
+                            setTarget(ctx, scc, createNbtString(StringExtension.trimEnd(src, trimChars)));
                             return SINGLE_SUCCESS;
                         }))
                 .then(addTwoInOneOutArgument("at",
@@ -234,7 +234,7 @@ public class StringCommand {
                             checkArgumentCount(scc.sources, 2);
                             var src = getNbtValueAsString(scc.sources[0]);
                             int i = StringExtension.convertAndCheckIndex(getNbtValueAsInt(scc.sources[1]), src);
-                            setTarget(ctx, scc, NbtString.of(Character.toString(src.charAt(i))));
+                            setTarget(ctx, scc, createNbtString(Character.toString(src.charAt(i))));
                             return SINGLE_SUCCESS;
                         }))
                 .then(addTwoInOneOutArgument("repeat",
@@ -247,7 +247,7 @@ public class StringCommand {
                             var src = getNbtValueAsString(scc.sources[0]);
                             var r = getNbtValueAsInt(scc.sources[1]);
                             StringExtension.checkNotBelowZero(r);
-                            setTarget(ctx, scc, NbtString.of(StringExtension.repeat(src, r)));
+                            setTarget(ctx, scc, createNbtString(StringExtension.repeat(src, r)));
                             return SINGLE_SUCCESS;
                         }))
                 .then(addTwoInOneOutArgument("matchesAll",
@@ -326,7 +326,7 @@ public class StringCommand {
                             } else {
                                 throw EXPECTED_LIST_EXCEPTION.create(element);
                             }
-                            setTarget(ctx, scc, NbtString.of(result));
+                            setTarget(ctx, scc, createNbtString(result));
                             return SINGLE_SUCCESS;
                         }))
                 .then(addTwoInOneOptionalInOneOutArgument("concat2",
@@ -344,7 +344,7 @@ public class StringCommand {
                             if (scc.sources.length > 2) {
                                 result += getNbtValueAsString(scc.sources[2]);
                             }
-                            setTarget(ctx, scc, NbtString.of(result));
+                            setTarget(ctx, scc, createNbtString(result));
                             return SINGLE_SUCCESS;
                         }))
                 .then(addTwoInOneOptionalInOneOutArgument("substring",
@@ -366,7 +366,7 @@ public class StringCommand {
                             } else {
                                 result = src.substring(begin);
                             }
-                            setTarget(ctx, scc, NbtString.of(result));
+                            setTarget(ctx, scc, createNbtString(result));
                             return SINGLE_SUCCESS;
                         }))
                 .then(addTwoInOneOptionalInOneOutArgument("substring2",
@@ -388,7 +388,7 @@ public class StringCommand {
                             } else {
                                 result = src.substring(begin);
                             }
-                            setTarget(ctx, scc, NbtString.of(result));
+                            setTarget(ctx, scc, createNbtString(result));
                             return SINGLE_SUCCESS;
                         }))
                 .then(addTwoInOneOptionalInOneOutArgument("split",
@@ -412,7 +412,7 @@ public class StringCommand {
                             }
                             NbtList list = new NbtList();
                             for (String s : result) {
-                                list.add(NbtString.of(s));
+                                list.add(createNbtString(s));
                             }
                             setTarget(ctx, scc, list);
                             return result.length;
@@ -515,7 +515,7 @@ public class StringCommand {
                             var src = getNbtValueAsString(scc.sources[0]);
                             var target = getNbtValueAsString(scc.sources[1]);
                             var replacement = getNbtValueAsString(scc.sources[2]);
-                            setTarget(ctx, scc, NbtString.of(src.replace(target, replacement)));
+                            setTarget(ctx, scc, createNbtString(src.replace(target, replacement)));
                             return SINGLE_SUCCESS;
                         }))
                 .then(addThreeInOneOutArgument("replaceAll",
@@ -530,7 +530,7 @@ public class StringCommand {
                             var src = getNbtValueAsString(scc.sources[0]);
                             var regex = getNbtValueAsString(scc.sources[1]);
                             var replacement = getNbtValueAsString(scc.sources[2]);
-                            setTarget(ctx, scc, NbtString.of(src.replaceAll(regex, replacement)));
+                            setTarget(ctx, scc, createNbtString(src.replaceAll(regex, replacement)));
                             return SINGLE_SUCCESS;
                         }))
                 .then(addThreeInOneOutArgument("replaceFirst",
@@ -545,7 +545,7 @@ public class StringCommand {
                             var src = getNbtValueAsString(scc.sources[0]);
                             var regex = getNbtValueAsString(scc.sources[1]);
                             var replacement = getNbtValueAsString(scc.sources[2]);
-                            setTarget(ctx, scc, NbtString.of(src.replaceFirst(regex, replacement)));
+                            setTarget(ctx, scc, createNbtString(src.replaceFirst(regex, replacement)));
                             return SINGLE_SUCCESS;
                         }));
         dispatcher.register(stringCommand);
@@ -568,6 +568,10 @@ public class StringCommand {
 
     public static String getNbtValueAsString(Pair<NbtElement, NbtPathArgumentType.NbtPath> pair) throws CommandSyntaxException {
         return getNbtElement(pair).asString();
+    }
+
+    public static NbtString createNbtString(String s) {
+        return NbtString.of(s);
     }
 
     public static int toInt(boolean bool) {
