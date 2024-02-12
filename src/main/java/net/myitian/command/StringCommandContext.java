@@ -7,7 +7,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Pair;
 
-public class StringCommandContext {public final DataCommandObject target;
+public class StringCommandContext {
+    public final DataCommandObject target;
     public final NbtCompound targetRoot;
     public final NbtPathArgumentType.NbtPath targetPath;
     public final Pair<NbtElement, NbtPathArgumentType.NbtPath>[] sources;
