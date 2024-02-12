@@ -722,7 +722,7 @@ public class StringCommand {
     private static void setTarget(CommandContext<ServerCommandSource> ctx, StringCommandContext scc, NbtElement element) throws CommandSyntaxException {
         scc.targetPath.put(scc.targetRoot, element);
         scc.target.setNbt(scc.targetRoot);
-        ctx.getSource().sendFeedback(scc.target.feedbackModify(), true);
+        ctx.getSource().sendFeedback(scc.target::feedbackModify, true);
     }
 
     private static ArgumentBuilder<ServerCommandSource, ?> addTarget(
