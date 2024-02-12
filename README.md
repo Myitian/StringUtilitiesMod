@@ -2,12 +2,13 @@
 A mod that provides more NBT string operations.\
 一个提供更多 NBT 字符串操作的模组。
 
-## Syntax
+## Syntax 语法
 `/string <method> [target] [source...]`
 
-The `target` and `source` parts are similar to what follows the `data modify` command.
+The `target` and `source` parts are similar to what follows the `data modify` command.\
+`target`和`source`部分与`data modify`命令后面的部分类似。
 
-## Example
+## Example 例子
 `/string isEmpty value ""` returns 1\
 `/string indexOf value "asdfghjkl" value "qwerty"` returns -1\
 `/string escape storage a:b c value '\'quote"slash\\'` stores `'quote\"slash\\` into `foo:bar/baz`\
@@ -15,7 +16,7 @@ The `target` and `source` parts are similar to what follows the `data modify` co
 `/string concat2 storage a b from entity @s SelectedItem.id from entity @s Inventory[0].id`\
 `/string join storage test playerUUID from value "~" from @s UUID`\
 
-## Available Methods
+## Available Methods 可用的方法
 | Name               | Source                                          | Target                               | Return Value                                                                                 |
 |--------------------|-------------------------------------------------|--------------------------------------|----------------------------------------------------------------------------------------------|
 | isBlank            | String                                          | -                                    | 1 if the input is a blank string, 0 otherwise.                                               |
@@ -56,4 +57,6 @@ The `target` and `source` parts are similar to what follows the `data modify` co
 | replace            | String src, String target, String replacement   | String                               | 1                                                                                            |
 | replaceAll         | String src, String regex, String replacement    | String                               | 1                                                                                            |
 | replaceFirst       | String src, String regex, String replacement    | String                               | 1                                                                                            |
-Note: Some methods actually accept any NBT element, but convert it to a string before processing.
+
+Note: Some methods actually accept any NBT element, but convert it to a string before processing.\
+注：有些方法实际上接受任何 NBT 元素，但在处理之前将其转换为字符串。
