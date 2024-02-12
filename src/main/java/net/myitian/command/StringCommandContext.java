@@ -2,23 +2,23 @@ package net.myitian.command;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.DataCommandObject;
-import net.minecraft.command.argument.NbtPathArgumentType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.command.arguments.NbtPathArgumentType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.util.Pair;
 
 public class StringCommandContext {public final DataCommandObject target;
-    public final NbtCompound targetRoot;
+    public final CompoundTag targetRoot;
     public final NbtPathArgumentType.NbtPath targetPath;
-    public final Pair<NbtElement, NbtPathArgumentType.NbtPath>[] sources;
+    public final Pair<Tag, NbtPathArgumentType.NbtPath>[] sources;
 
     public StringCommandContext(
             DataCommandObject target,
             NbtPathArgumentType.NbtPath targetPath,
-            NbtElement source,
+            Tag source,
             NbtPathArgumentType.NbtPath sourcePath) throws CommandSyntaxException {
         this.target = target;
-        this.targetRoot = target == null ? null : target.getNbt();
+        this.targetRoot = target == null ? null : target.getTag();
         this.targetPath = targetPath;
         sources = new Pair[]{new Pair<>(source, sourcePath)};
     }
@@ -26,9 +26,9 @@ public class StringCommandContext {public final DataCommandObject target;
     public StringCommandContext(
             DataCommandObject target,
             NbtPathArgumentType.NbtPath targetPath,
-            Pair<NbtElement, NbtPathArgumentType.NbtPath>[] sources) throws CommandSyntaxException {
+            Pair<Tag, NbtPathArgumentType.NbtPath>[] sources) throws CommandSyntaxException {
         this.target = target;
-        this.targetRoot = target == null ? null : target.getNbt();
+        this.targetRoot = target == null ? null : target.getTag();
         this.targetPath = targetPath;
         this.sources = sources;
     }
