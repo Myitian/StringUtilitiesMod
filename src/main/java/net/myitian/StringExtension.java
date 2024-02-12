@@ -3,7 +3,7 @@ package net.myitian;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.Dynamic3CommandExceptionType;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -13,11 +13,11 @@ import java.util.regex.Pattern;
 
 public class StringExtension {
     public static final Dynamic2CommandExceptionType INTEGER_TOO_LOW =
-            new Dynamic2CommandExceptionType((found, min) -> new TranslatableText("argument.integer.low", min, found));
+            new Dynamic2CommandExceptionType((found, min) -> Text.translatable("argument.integer.low", min, found));
     public static final Dynamic2CommandExceptionType INTEGER_TOO_HIGH =
-            new Dynamic2CommandExceptionType((found, max) -> new TranslatableText("argument.integer.big", max, found));
+            new Dynamic2CommandExceptionType((found, max) -> Text.translatable("argument.integer.big", max, found));
     public static final Dynamic3CommandExceptionType INTEGER_NOT_IN_RANGE_2 =
-            new Dynamic3CommandExceptionType((found, range0, range1) -> new TranslatableText("argument.string-utilities.integer.not_in_range", found, range0, range1));
+            new Dynamic3CommandExceptionType((found, range0, range1) -> Text.translatable("argument.string-utilities.integer.not_in_range", found, range0, range1));
 
     private static final Pattern SPECIAL_REGEX_CHARS = Pattern.compile("[{}()\\[\\].+*?^$\\\\|]");
 

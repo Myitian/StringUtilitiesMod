@@ -36,7 +36,7 @@ public class StringCommand {
             new Dynamic2CommandExceptionType((found, max) -> Text.translatable("argument.integer.big", max, found));
     public static final DynamicCommandExceptionType EXPECTED_LIST_EXCEPTION =
             new DynamicCommandExceptionType(nbt -> Text.translatable("commands.data.modify.expected_list", nbt));
-    public static final SimpleCommandExceptionType   TOO_FEW_ARGUMENT_EXCEPTION = // [Should not show]
+    public static final SimpleCommandExceptionType TOO_FEW_ARGUMENT_EXCEPTION = // [Should not show]
             new SimpleCommandExceptionType(Text.translatable("commands.string-utilities.string.too_few_arguments"));
     public static final DynamicCommandExceptionType INVALID_CHAR_ARRAY_EXCEPTION = // Invalid char array: %s
             new DynamicCommandExceptionType(name -> Text.translatable("commands.string-utilities.string.invalid_char_array", name));
