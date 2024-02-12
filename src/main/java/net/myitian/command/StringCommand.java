@@ -9,8 +9,8 @@ import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.fabricmc.fabric.api.util.NbtType;
-import net.minecraft.command.arguments.NbtTagArgumentType;
 import net.minecraft.command.arguments.NbtPathArgumentType;
+import net.minecraft.command.arguments.NbtTagArgumentType;
 import net.minecraft.nbt.*;
 import net.minecraft.server.command.DataCommand;
 import net.minecraft.server.command.ServerCommandSource;
@@ -53,6 +53,7 @@ public class StringCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
         register(dispatcher);
     }
+
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> stringCommand = literal("string")
                 .requires(source -> source.hasPermissionLevel(2))
@@ -149,7 +150,7 @@ public class StringCommand {
                     int[] cps = src.codePoints().toArray();
                     ListTag list = new ListTag();
                     for (int i = 0; i < cps.length; i++) {
-                        list.add(StringTag.of(new String(cps, i,1)));
+                        list.add(StringTag.of(new String(cps, i, 1)));
                     }
                     setTarget(ctx, scc, list);
                     return list.size();
@@ -327,7 +328,7 @@ public class StringCommand {
                                 }
                                 result = sb.toString();
                             } else if (element instanceof AbstractListTag<?>) {
-                                AbstractListTag<?> list = (AbstractListTag<?>)element;
+                                AbstractListTag<?> list = (AbstractListTag<?>) element;
                                 String[] strings = new String[list.size()];
                                 int len = 0;
                                 for (int i = 0; i < strings.length; i++) {
@@ -579,7 +580,7 @@ public class StringCommand {
     public static int getNbtValueAsInt(Pair<Tag, NbtPathArgumentType.NbtPath> pair) throws CommandSyntaxException {
         Tag e = getNbtElement(pair);
         if (e instanceof AbstractNumberTag) {
-            return ((AbstractNumberTag)e).getInt();
+            return ((AbstractNumberTag) e).getInt();
         } else {
             throw EXPECTED_INT_EXCEPTION.create(e.getReader().getCrashReportName());
         }
@@ -716,7 +717,7 @@ public class StringCommand {
             for (char c : tc.asString().toCharArray()) {
                 trimChars.add(c);
             }
-        } else if (tc instanceof ListTag && (list=(ListTag)tc).getElementType() == NbtType.STRING) {
+        } else if (tc instanceof ListTag && (list = (ListTag) tc).getElementType() == NbtType.STRING) {
             int len = list.size();
             for (int i = 0; i < len; i++) {
                 String str = list.get(i).asString();
@@ -732,7 +733,7 @@ public class StringCommand {
     }
 
     private static void setTarget(CommandContext<ServerCommandSource> ctx, StringCommandContext scc, Tag element) throws CommandSyntaxException {
-        scc.targetPath.put(scc.targetRoot, ()->element);
+        scc.targetPath.put(scc.targetRoot, () -> element);
         scc.target.setTag(scc.targetRoot);
         ctx.getSource().sendFeedback(scc.target.feedbackModify(), true);
     }
