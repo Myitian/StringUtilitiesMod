@@ -1,0 +1,5 @@
+{
+  "commands.string-utilities.string.too_few_arguments": "Too few arguments",
+  "commands.string-utilities.string.invalid_char_array": "Invalid char array: %s",
+  "commands.string-utilities.string.unexpected_type": "Invalid argument type: %s, expected %s"
+}
