@@ -1,26 +1,26 @@
 {
-	"schemaVersion": 1,
-	"id": "string-utilities",
-	"version": "${version}",
-	"name": "StringUtilities",
-	"description": "A mod that provides more NBT string operations.",
-	"authors": [
-		"Myitian"
-	],
-	"contact": {
-		"sources": "https://github.com/Myitian/StringUtilitiesMod"
-	},
-	"license": "MIT",
-	"icon": "assets/string-utilities/icon.png",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			"net.myitian.StringUtilities"
-		]
-	},
-	"depends": {
-		"fabricloader": "*",
-		"minecraft": ">=1.16 <1.19",
-		"fabric": "*"
-	}
+  "schemaVersion": 1,
+  "id": "string-utilities",
+  "version": "${version}",
+  "name": "StringUtilities",
+  "description": "A mod that provides more NBT string operations.",
+  "authors": [
+    "Myitian"
+  ],
+  "contact": {
+    "sources": "https://github.com/Myitian/StringUtilitiesMod"
+  },
+  "license": "MIT",
+  "icon": "assets/string-utilities/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.myitian.StringUtilities"
+    ]
+  },
+  "depends": {
+    "fabricloader": "*",
+    "minecraft": ">=1.14 <1.15",
+    "fabric": "*"
+  }
 }

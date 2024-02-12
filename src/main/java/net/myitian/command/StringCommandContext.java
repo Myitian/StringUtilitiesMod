@@ -7,7 +7,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Pair;
 
-public class StringCommandContext {public final DataCommandObject target;
+public class StringCommandContext {
+    public final DataCommandObject target;
     public final CompoundTag targetRoot;
     public final NbtPathArgumentType.NbtPath targetPath;
     public final Pair<Tag, NbtPathArgumentType.NbtPath>[] sources;
