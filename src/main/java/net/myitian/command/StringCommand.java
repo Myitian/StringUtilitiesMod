@@ -16,6 +16,7 @@ import net.minecraft.server.command.DataCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Pair;
+import net.myitian.Java11StringShim;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -58,7 +59,7 @@ public class StringCommand {
                 .then(addOneInZeroOutArgument("isBlank", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
                     String src = getNbtValueAsString(scc.sources[0]);
-                    return toInt(src.isBlank());
+                    return toInt(Java11StringShim.isBlank(src));
                 }))
                 .then(addOneInZeroOutArgument("isEmpty", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
@@ -117,19 +118,19 @@ public class StringCommand {
                 .then(addOneInOneOutArgument("strip", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
                     String src = getNbtValueAsString(scc.sources[0]);
-                    setTarget(ctx, scc, StringTag.of(src.strip()));
+                    setTarget(ctx, scc, StringTag.of(Java11StringShim.strip(src)));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOutArgument("stripLeading", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
                     String src = getNbtValueAsString(scc.sources[0]);
-                    setTarget(ctx, scc, StringTag.of(src.stripLeading()));
+                    setTarget(ctx, scc, StringTag.of(Java11StringShim.stripLeading(src)));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOutArgument("stripTrailing", (ctx, scc) -> {
                     checkArgumentCount(scc.sources, 1);
                     String src = getNbtValueAsString(scc.sources[0]);
-                    setTarget(ctx, scc, StringTag.of(src.stripTrailing()));
+                    setTarget(ctx, scc, StringTag.of(Java11StringShim.stripTrailing(src)));
                     return SINGLE_SUCCESS;
                 }))
                 .then(addOneInOneOutArgument("toCharArray", (ctx, scc) -> {
@@ -262,11 +263,7 @@ public class StringCommand {
                             String src = getNbtValueAsString(scc.sources[0]);
                             int r = getNbtValueAsInt(scc.sources[1]);
                             checkNotBelowZero(r);
-                            StringBuilder sb = new StringBuilder(src.length()*r);
-                            for (int i = 0; i < r; i++) {
-                                sb.append(src);
-                            }
-                            setTarget(ctx, scc, StringTag.of(sb.toString()));
+                            setTarget(ctx, scc, StringTag.of(Java11StringShim.repeat(src, r)));
                             return SINGLE_SUCCESS;
                         }))
                 .then(addTwoInOneOutArgument("matchesAll",
@@ -404,7 +401,7 @@ public class StringCommand {
                             checkIndex(begin, src);
                             String result;
                             if (scc.sources.length > 2) {
-                                int length = convertIndex(getNbtValueAsInt(scc.sources[2]), src);
+                                int length = getNbtValueAsInt(scc.sources[2]);
                                 checkInt(length, 0, src.length() - begin);
                                 result = src.substring(begin, begin + length);
                             } else {
