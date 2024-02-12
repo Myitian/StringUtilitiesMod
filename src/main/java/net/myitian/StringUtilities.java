@@ -2,7 +2,7 @@ package net.myitian;
 
 import net.fabricmc.api.ModInitializer;
 
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.myitian.command.StringCommand;
 
 public class StringUtilities implements ModInitializer {

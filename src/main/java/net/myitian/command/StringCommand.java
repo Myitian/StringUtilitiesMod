@@ -8,14 +8,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.NbtElementArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.nbt.*;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.DataCommand;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Pair;
 
 import java.util.ArrayList;
@@ -33,27 +31,24 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class StringCommand {
     private static final Dynamic2CommandExceptionType INTEGER_TOO_LOW =
-            new Dynamic2CommandExceptionType((found, min) -> Text.translatable("argument.integer.low", min, found));
+            new Dynamic2CommandExceptionType((found, min) -> new TranslatableText("argument.integer.low", min, found));
     private static final Dynamic2CommandExceptionType INTEGER_TOO_HIGH =
-            new Dynamic2CommandExceptionType((found, max) -> Text.translatable("argument.integer.big", max, found));
+            new Dynamic2CommandExceptionType((found, max) -> new TranslatableText("argument.integer.big", max, found));
     private static final DynamicCommandExceptionType EXPECTED_LIST_EXCEPTION =
-            new DynamicCommandExceptionType(nbt -> Text.translatable("commands.data.modify.expected_list", nbt));
+            new DynamicCommandExceptionType(nbt -> new TranslatableText("commands.data.modify.expected_list", nbt));
     private static final SimpleCommandExceptionType ARGUMENT_TOO_FEW_EXCEPTION = // [Should not show]
-            new SimpleCommandExceptionType(Text.translatable("commands.string-utilities.string.too_few_arguments"));
+            new SimpleCommandExceptionType(new TranslatableText("commands.string-utilities.string.too_few_arguments"));
     private static final DynamicCommandExceptionType INVALID_CHAR_ARRAY_EXCEPTION = // Invalid char array: %s
-            new DynamicCommandExceptionType(name -> Text.translatable("commands.string-utilities.string.invalid_char_array", name));
+            new DynamicCommandExceptionType(name -> new TranslatableText("commands.string-utilities.string.invalid_char_array", name));
     private static final DynamicCommandExceptionType EXPECTED_STRING_LIST_EXCEPTION = // Invalid argument type: %s, expected String
-            new DynamicCommandExceptionType(name -> Text.translatable("commands.string-utilities.string.unexpected_type", name, NbtString.TYPE.getCrashReportName()));
+            new DynamicCommandExceptionType(name -> new TranslatableText("commands.string-utilities.string.unexpected_type", name, NbtString.TYPE.getCrashReportName()));
     private static final DynamicCommandExceptionType EXPECTED_INT_ARRAY_EXCEPTION = // Invalid argument type: %s, expected IntArray
-            new DynamicCommandExceptionType(name -> Text.translatable("commands.string-utilities.string.unexpected_type", name, NbtIntArray.TYPE.getCrashReportName()));
+            new DynamicCommandExceptionType(name -> new TranslatableText("commands.string-utilities.string.unexpected_type", name, NbtIntArray.TYPE.getCrashReportName()));
     private static final DynamicCommandExceptionType EXPECTED_INT_EXCEPTION = // Invalid argument type: %s, expected Int
-            new DynamicCommandExceptionType(name -> Text.translatable("commands.string-utilities.string.unexpected_type", name, NbtInt.TYPE.getCrashReportName()));
+            new DynamicCommandExceptionType(name -> new TranslatableText("commands.string-utilities.string.unexpected_type", name, NbtInt.TYPE.getCrashReportName()));
 
     private static final Pattern SPECIAL_REGEX_CHARS = Pattern.compile("[{}()\\[\\].+*?^$\\\\|]");
 
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
-        register(dispatcher);
-    }
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
         register(dispatcher);
     }
