@@ -5,7 +5,6 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.CommandRegistryAccess;
@@ -30,10 +29,6 @@ import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class StringCommand {
-    public static final Dynamic2CommandExceptionType INTEGER_TOO_LOW =
-            new Dynamic2CommandExceptionType((found, min) -> Text.translatable("argument.integer.low", min, found));
-    public static final Dynamic2CommandExceptionType INTEGER_TOO_HIGH =
-            new Dynamic2CommandExceptionType((found, max) -> Text.translatable("argument.integer.big", max, found));
     public static final DynamicCommandExceptionType EXPECTED_LIST_EXCEPTION =
             new DynamicCommandExceptionType(nbt -> Text.translatable("commands.data.modify.expected_list", nbt));
     public static final SimpleCommandExceptionType TOO_FEW_ARGUMENT_EXCEPTION = // [Should not show]
@@ -368,7 +363,7 @@ public class StringCommand {
                             String result;
                             if (scc.sources.length > 2) {
                                 int end = getNbtValueAsInt(scc.sources[2]);
-                                StringExtension.checkInt(end, src.length() - begin, -1, begin, src.length());
+                                StringExtension.checkInt(end, begin - src.length(), -1, begin, src.length());
                                 result = src.substring(begin, StringExtension.convertIndex(end, src));
                             } else {
                                 result = src.substring(begin);
