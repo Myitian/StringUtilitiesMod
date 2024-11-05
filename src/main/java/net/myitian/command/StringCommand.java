@@ -15,6 +15,7 @@ import net.minecraft.server.command.DataCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Pair;
+import net.myitian.NbtToJson;
 import net.myitian.StringExtension;
 
 import java.util.HashSet;
@@ -193,6 +194,18 @@ public class StringCommand {
                     setTarget(ctx, scc, createNbtString(sb.toString()));
                     return SINGLE_SUCCESS;
                 }))
+                .then(addOneInOneOptionalInOneOutArgument("toJson",
+                        "sourcePath",
+                        "value",
+                        "isPrettyPrintingSourcePath",
+                        "isPrettyPrinting",
+                        (ctx, scc) -> {
+                            checkArgumentCount(scc.sources, 1);
+                            boolean isPrettyPrinting = scc.sources.length > 1 && getNbtValueAsInt(scc.sources[1]) != 0;
+                            String json = NbtToJson.convert(getNbtElement(scc.sources[0]), isPrettyPrinting);
+                            setTarget(ctx, scc, createNbtString(json));
+                            return SINGLE_SUCCESS;
+                        }))
                 .then(addOneInOneOptionalInOneOutArgument("trim",
                         "sourcePath",
                         "value",
