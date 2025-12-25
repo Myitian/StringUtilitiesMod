@@ -72,24 +72,20 @@ public class StringExtension {
         return i;
     }
 
-    public static ArrayList<MatchResult> matchesAll(Matcher matcher) {
+    public static void matchesAll(Matcher matcher, Consumer<MatchResult> consumer) {
         int start = 0;
-        ArrayList<MatchResult> results = new ArrayList<>();
         while (matcher.find(start)) {
-            results.add(matcher.toMatchResult());
+            consumer.accept(matcher.toMatchResult());
             start = matcher.end();
         }
-        return results;
     }
 
-    public static ArrayList<MatchResult> matchesAllFully(Matcher matcher) {
+    public static void matchesAllFully(Matcher matcher, Consumer<MatchResult> consumer) {
         int start = 0;
-        ArrayList<MatchResult> results = new ArrayList<>();
         while (matcher.find(start)) {
-            results.add(matcher.toMatchResult());
+            consumer.accept(matcher.toMatchResult());
             start = matcher.start() + 1;
         }
-        return results;
     }
 
     public static int convertIndex(int index, String s) {
@@ -109,9 +105,5 @@ public class StringExtension {
     public static int convertAndCheckIndexBefore(int index, String s) throws CommandSyntaxException {
         checkInt(index, 1 - s.length(), -1, 1, s.length());
         return convertIndex(index, s);
-    }
-
-    public static void checkIndex(int index, String s) throws CommandSyntaxException {
-        checkInt(index, 0, s.length());
     }
 }

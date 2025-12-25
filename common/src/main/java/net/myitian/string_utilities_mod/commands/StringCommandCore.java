@@ -40,7 +40,7 @@ public final class StringCommandCore {
         new Dynamic3CommandExceptionType((found, range0, range1) -> Component.translatable("argument.string-utilities.integer.not_in_range", found, range0, range1));
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        LiteralArgumentBuilder<CommandSourceStack> stringCommand = Commands.literal("string")
+        var stringCommand = Commands.literal("string")
             .requires(source -> source.hasPermission(2))
             .then(addOneInZeroOutArgument("isBlank", StringCommands::isBlank))
             .then(addOneInZeroOutArgument("isEmpty", StringCommands::isEmpty))
@@ -276,13 +276,13 @@ public final class StringCommandCore {
         var tc = getTag(ctx.sources[1]);
         var trimChars = new CharOpenHashSet();
         if (tc instanceof StringTag str) {
-            for (char c : str.getAsString().toCharArray()) {
+            for (var c : str.getAsString().toCharArray()) {
                 trimChars.add(c);
             }
         } else if (tc instanceof ListTag list && list.getElementType() == Tag.TAG_STRING) {
-            int len = list.size();
-            for (int i = 0; i < len; i++) {
-                String str = list.get(i).getAsString();
+            var len = list.size();
+            for (var i = 0; i < len; i++) {
+                var str = list.get(i).getAsString();
                 if (str.length() != 1) {
                     throw INVALID_CHAR_ARRAY_EXCEPTION.create(list);
                 }
@@ -308,7 +308,7 @@ public final class StringCommandCore {
     public static ArgumentBuilder<CommandSourceStack, ?> addTarget(
         ArgumentBuilder<CommandSourceStack, ?> argument,
         BiFunction<ArgumentBuilder<CommandSourceStack, ?>, DataCommands.DataProvider, ArgumentBuilder<CommandSourceStack, ?>> argumentAdder) {
-        for (DataCommands.DataProvider target : DataCommands.TARGET_PROVIDERS) {
+        for (var target : DataCommands.TARGET_PROVIDERS) {
             target.wrap(argument,
                 builder -> builder.then(argumentAdder.apply(
                     Commands.argument("targetPath", NbtPathArgument.nbtPath()),
@@ -322,7 +322,7 @@ public final class StringCommandCore {
         String sourcePathName,
         String valueName,
         BiFunction<ArgumentBuilder<CommandSourceStack, ?>, SourceGetter, ArgumentBuilder<CommandSourceStack, ?>> argumentAdder) {
-        for (DataCommands.DataProvider source : DataCommands.SOURCE_PROVIDERS) {
+        for (var source : DataCommands.SOURCE_PROVIDERS) {
             argument.then(source.wrap(Commands.literal("from"),
                 innerBuilder -> argumentAdder.apply(innerBuilder, new FromWithoutPathSourceGetter(source))
                     .then(argumentAdder.apply(Commands.argument(sourcePathName, NbtPathArgument.nbtPath()),
@@ -531,8 +531,8 @@ public final class StringCommandCore {
     }
 
     public static void checkInt(int value, int range0min, int range0max, int range1min, int range1max) throws CommandSyntaxException {
-        int min = Math.min(range0min, range1min);
-        int max = Math.max(range0max, range1max);
+        var min = Math.min(range0min, range1min);
+        var max = Math.max(range0max, range1max);
         if (value < min) {
             throw INTEGER_TOO_LOW.create(value, min);
         } else if (value > max) {

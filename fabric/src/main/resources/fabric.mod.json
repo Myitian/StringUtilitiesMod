@@ -19,6 +19,7 @@
     ]
   },
   "depends": {
-    "minecraft": "${supported_minecraft_version_fabric}"
+    "minecraft": "${supported_minecraft_version_fabric}",
+    "fabric-api": "*"
   }
 }

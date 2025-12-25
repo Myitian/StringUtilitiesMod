@@ -8,7 +8,6 @@ import net.myitian.string_utilities_mod.StringExtension;
 
 import java.text.BreakIterator;
 import java.util.Locale;
-import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
 import static net.myitian.string_utilities_mod.commands.StringCommandCore.*;
@@ -17,34 +16,34 @@ public final class StringCommands {
 
     public static int isBlank(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String src = getNbtValueAsString(ctx.sources[0]);
+        var src = getNbtValueAsString(ctx.sources[0]);
         return toInt(src.isBlank());
     }
 
     public static int isEmpty(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String src = getNbtValueAsString(ctx.sources[0]);
+        var src = getNbtValueAsString(ctx.sources[0]);
         return toInt(src.isEmpty());
     }
 
     public static int length(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String src = getNbtValueAsString(ctx.sources[0]);
+        var src = getNbtValueAsString(ctx.sources[0]);
         return src.length();
     }
 
     public static int toString(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String txt = getNbtValueAsString(ctx.sources[0]);
+        var txt = getNbtValueAsString(ctx.sources[0]);
         return setTarget(ctx, txt);
     }
 
     public static int escape(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String src = getNbtValueAsString(ctx.sources[0]);
-        StringBuilder stringBuilder = new StringBuilder(" ");
-        for (int i = 0; i < src.length(); ++i) {
-            char d = src.charAt(i);
+        var src = getNbtValueAsString(ctx.sources[0]);
+        var stringBuilder = new StringBuilder(" ");
+        for (var i = 0; i < src.length(); ++i) {
+            var d = src.charAt(i);
             if (d == '\\' || d == '"') {
                 stringBuilder.append('\\');
             }
@@ -55,63 +54,63 @@ public final class StringCommands {
 
     public static int escapeNbt(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String txt = StringTag.quoteAndEscape(getNbtValueAsString(ctx.sources[0]));
+        var txt = StringTag.quoteAndEscape(getNbtValueAsString(ctx.sources[0]));
         return setTarget(ctx, txt);
     }
 
     public static int escapeRegex(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String txt = Pattern.quote(getNbtValueAsString(ctx.sources[0]));
+        var txt = Pattern.quote(getNbtValueAsString(ctx.sources[0]));
         return setTarget(ctx, txt);
     }
 
     public static int toLowerCase(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String txt = getNbtValueAsString(ctx.sources[0]).toLowerCase();
+        var txt = getNbtValueAsString(ctx.sources[0]).toLowerCase();
         return setTarget(ctx, txt);
     }
 
     public static int toUpperCase(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String txt = getNbtValueAsString(ctx.sources[0]).toUpperCase();
+        var txt = getNbtValueAsString(ctx.sources[0]).toUpperCase();
         return setTarget(ctx, txt);
     }
 
     public static int toLowerCaseInvariant(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String txt = getNbtValueAsString(ctx.sources[0]).toLowerCase(Locale.ROOT);
+        var txt = getNbtValueAsString(ctx.sources[0]).toLowerCase(Locale.ROOT);
         return setTarget(ctx, txt);
     }
 
     public static int toUpperCaseInvariant(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String txt = getNbtValueAsString(ctx.sources[0]).toUpperCase(Locale.ROOT);
+        var txt = getNbtValueAsString(ctx.sources[0]).toUpperCase(Locale.ROOT);
         return setTarget(ctx, txt);
     }
 
     public static int strip(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String txt = getNbtValueAsString(ctx.sources[0]).strip();
+        var txt = getNbtValueAsString(ctx.sources[0]).strip();
         return setTarget(ctx, txt);
     }
 
     public static int stripLeading(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String txt = getNbtValueAsString(ctx.sources[0]).stripLeading();
+        var txt = getNbtValueAsString(ctx.sources[0]).stripLeading();
         return setTarget(ctx, txt);
     }
 
     public static int stripTrailing(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String txt = getNbtValueAsString(ctx.sources[0]).stripTrailing();
+        var txt = getNbtValueAsString(ctx.sources[0]).stripTrailing();
         return setTarget(ctx, txt);
     }
 
     public static int toCharArray(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String src = getNbtValueAsString(ctx.sources[0]);
-        ListTag list = new ListTag();
-        for (char c : src.toCharArray()) {
+        var src = getNbtValueAsString(ctx.sources[0]);
+        var list = new ListTag();
+        for (var c : src.toCharArray()) {
             list.add(StringTag.valueOf(Character.toString(c)));
         }
         setTarget(ctx, list);
@@ -120,8 +119,8 @@ public final class StringCommands {
 
     public static int toCodePointStrings(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String src = getNbtValueAsString(ctx.sources[0]);
-        ListTag list = new ListTag();
+        var src = getNbtValueAsString(ctx.sources[0]);
+        var list = new ListTag();
         src.codePoints().mapToObj(Character::toString).map(StringTag::valueOf).forEach(list::add);
         setTarget(ctx, list);
         return list.size();
@@ -129,8 +128,8 @@ public final class StringCommands {
 
     public static int toCodePoints(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String src = getNbtValueAsString(ctx.sources[0]);
-        IntArrayTag arr = new IntArrayTag(src.codePoints().toArray());
+        var src = getNbtValueAsString(ctx.sources[0]);
+        var arr = new IntArrayTag(src.codePoints().toArray());
         setTarget(ctx, arr);
         return arr.size();
     }
@@ -144,12 +143,12 @@ public final class StringCommands {
         } else if (list.isEmpty()) {
             result = "";
         } else {
-            int size = list.size();
-            StringBuilder sb = new StringBuilder();
+            var size = list.size();
+            var sb = new StringBuilder();
             if (!(list.get(0) instanceof NumericTag)) {
                 throw EXPECTED_INT_ARRAY_EXCEPTION.create(element.getType().getPrettyName());
             }
-            for (int i = 0; i < size; i++) {
+            for (var i = 0; i < size; i++) {
                 sb.appendCodePoint(((NumericTag) list.get(i)).getAsInt());
             }
             result = sb.toString();
@@ -159,9 +158,9 @@ public final class StringCommands {
 
     public static int breakCharacters(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String src = getNbtValueAsString(ctx.sources[0]);
-        BreakIterator bi = BreakIterator.getCharacterInstance();
-        ListTag list = new ListTag();
+        var src = getNbtValueAsString(ctx.sources[0]);
+        var bi = BreakIterator.getCharacterInstance();
+        var list = new ListTag();
         StringExtension.iterate(bi, src, it -> list.add(StringTag.valueOf(it)));
         setTarget(ctx, list);
         return list.size();
@@ -169,9 +168,9 @@ public final class StringCommands {
 
     public static int breakCharactersInvariant(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String src = getNbtValueAsString(ctx.sources[0]);
-        BreakIterator bi = BreakIterator.getCharacterInstance(Locale.ROOT);
-        ListTag list = new ListTag();
+        var src = getNbtValueAsString(ctx.sources[0]);
+        var bi = BreakIterator.getCharacterInstance(Locale.ROOT);
+        var list = new ListTag();
         StringExtension.iterate(bi, src, it -> list.add(StringTag.valueOf(it)));
         setTarget(ctx, list);
         return list.size();
@@ -179,9 +178,9 @@ public final class StringCommands {
 
     public static int breakLines(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String src = getNbtValueAsString(ctx.sources[0]);
-        BreakIterator bi = BreakIterator.getLineInstance();
-        ListTag list = new ListTag();
+        var src = getNbtValueAsString(ctx.sources[0]);
+        var bi = BreakIterator.getLineInstance();
+        var list = new ListTag();
         StringExtension.iterate(bi, src, it -> list.add(StringTag.valueOf(it)));
         setTarget(ctx, list);
         return list.size();
@@ -189,9 +188,9 @@ public final class StringCommands {
 
     public static int breakLinesInvariant(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String src = getNbtValueAsString(ctx.sources[0]);
-        BreakIterator bi = BreakIterator.getLineInstance(Locale.ROOT);
-        ListTag list = new ListTag();
+        var src = getNbtValueAsString(ctx.sources[0]);
+        var bi = BreakIterator.getLineInstance(Locale.ROOT);
+        var list = new ListTag();
         StringExtension.iterate(bi, src, it -> list.add(StringTag.valueOf(it)));
         setTarget(ctx, list);
         return list.size();
@@ -199,9 +198,9 @@ public final class StringCommands {
 
     public static int breakSentences(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String src = getNbtValueAsString(ctx.sources[0]);
-        BreakIterator bi = BreakIterator.getSentenceInstance();
-        ListTag list = new ListTag();
+        var src = getNbtValueAsString(ctx.sources[0]);
+        var bi = BreakIterator.getSentenceInstance();
+        var list = new ListTag();
         StringExtension.iterate(bi, src, it -> list.add(StringTag.valueOf(it)));
         setTarget(ctx, list);
         return list.size();
@@ -209,9 +208,9 @@ public final class StringCommands {
 
     public static int breakSentencesInvariant(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String src = getNbtValueAsString(ctx.sources[0]);
-        BreakIterator bi = BreakIterator.getSentenceInstance(Locale.ROOT);
-        ListTag list = new ListTag();
+        var src = getNbtValueAsString(ctx.sources[0]);
+        var bi = BreakIterator.getSentenceInstance(Locale.ROOT);
+        var list = new ListTag();
         StringExtension.iterate(bi, src, it -> list.add(StringTag.valueOf(it)));
         setTarget(ctx, list);
         return list.size();
@@ -219,9 +218,9 @@ public final class StringCommands {
 
     public static int breakWords(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String src = getNbtValueAsString(ctx.sources[0]);
-        BreakIterator bi = BreakIterator.getWordInstance();
-        ListTag list = new ListTag();
+        var src = getNbtValueAsString(ctx.sources[0]);
+        var bi = BreakIterator.getWordInstance();
+        var list = new ListTag();
         StringExtension.iterate(bi, src, it -> list.add(StringTag.valueOf(it)));
         setTarget(ctx, list);
         return list.size();
@@ -229,9 +228,9 @@ public final class StringCommands {
 
     public static int breakWordsInvariant(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        String src = getNbtValueAsString(ctx.sources[0]);
-        BreakIterator bi = BreakIterator.getWordInstance(Locale.ROOT);
-        ListTag list = new ListTag();
+        var src = getNbtValueAsString(ctx.sources[0]);
+        var bi = BreakIterator.getWordInstance(Locale.ROOT);
+        var list = new ListTag();
         StringExtension.iterate(bi, src, it -> list.add(StringTag.valueOf(it)));
         setTarget(ctx, list);
         return list.size();
@@ -243,13 +242,13 @@ public final class StringCommands {
         if (!(element instanceof CollectionTag<?> list)) {
             throw EXPECTED_LIST_EXCEPTION.create(element);
         }
-        String[] strings = new String[list.size()];
-        int len = 0;
-        for (int i = 0; i < strings.length; i++) {
+        var strings = new String[list.size()];
+        var len = 0;
+        for (var i = 0; i < strings.length; i++) {
             len += (strings[i] = list.get(i).getAsString()).length();
         }
         var sb = new StringBuilder(len);
-        for (String string : strings) {
+        for (var string : strings) {
             sb.append(string);
         }
         return setTarget(ctx, sb.toString());
@@ -257,37 +256,37 @@ public final class StringCommands {
 
     public static int toJson(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
-        boolean isPrettyPrinting = ctx.sources.length > 1 && getNbtValueAsInt(ctx.sources[1]) != 0;
-        String json = JsonNbt.convert(getTag(ctx.sources[0]), isPrettyPrinting);
+        var isPrettyPrinting = ctx.sources.length > 1 && getNbtValueAsInt(ctx.sources[1]) != 0;
+        var json = JsonNbt.convert(getTag(ctx.sources[0]), isPrettyPrinting);
         return setTarget(ctx, json);
     }
 
     public static int trim(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
         var src = getNbtValueAsString(ctx.sources[0]);
-        CharSet trimChars = createTrimCharsSet(ctx);
+        var trimChars = createTrimCharsSet(ctx);
         return setTarget(ctx, StringExtension.trim(src, trimChars));
     }
 
     public static int trimStart(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
         var src = getNbtValueAsString(ctx.sources[0]);
-        CharSet trimChars = createTrimCharsSet(ctx);
+        var trimChars = createTrimCharsSet(ctx);
         return setTarget(ctx, StringExtension.trimStart(src, trimChars));
     }
 
     public static int trimEnd(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
         var src = getNbtValueAsString(ctx.sources[0]);
-        CharSet trimChars = createTrimCharsSet(ctx);
+        var trimChars = createTrimCharsSet(ctx);
         return setTarget(ctx, StringExtension.trimEnd(src, trimChars));
     }
 
     public static int at(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 2);
         var src = getNbtValueAsString(ctx.sources[0]);
-        int i = StringExtension.convertAndCheckIndex(getNbtValueAsInt(ctx.sources[1]), src);
-        char cp = src.charAt(i);
+        var i = StringExtension.convertAndCheckIndex(getNbtValueAsInt(ctx.sources[1]), src);
+        var cp = src.charAt(i);
         setTarget(ctx, Character.toString(cp));
         return cp;
     }
@@ -295,8 +294,8 @@ public final class StringCommands {
     public static int codePointAt(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 2);
         var src = getNbtValueAsString(ctx.sources[0]);
-        int i = StringExtension.convertAndCheckIndex(getNbtValueAsInt(ctx.sources[1]), src);
-        int cp = src.codePointAt(i);
+        var i = StringExtension.convertAndCheckIndex(getNbtValueAsInt(ctx.sources[1]), src);
+        var cp = src.codePointAt(i);
         setTarget(ctx, Character.toString(cp));
         return cp;
     }
@@ -304,8 +303,8 @@ public final class StringCommands {
     public static int codePointBefore(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 2);
         var src = getNbtValueAsString(ctx.sources[0]);
-        int i = StringExtension.convertAndCheckIndexBefore(getNbtValueAsInt(ctx.sources[1]), src);
-        int cp = src.codePointBefore(i);
+        var i = StringExtension.convertAndCheckIndexBefore(getNbtValueAsInt(ctx.sources[1]), src);
+        var cp = src.codePointBefore(i);
         setTarget(ctx, Character.toString(cp));
         return cp;
     }
@@ -325,12 +324,12 @@ public final class StringCommands {
         var regex = Pattern.compile(p);
         var matcher = regex.matcher(src);
         var list = new ListTag();
-        for (MatchResult r : StringExtension.matchesAll(matcher)) {
+        StringExtension.matchesAll(matcher, it -> {
             var nbt = new CompoundTag();
-            nbt.putInt("start", r.start());
-            nbt.putInt("end", r.end());
+            nbt.putInt("start", it.start());
+            nbt.putInt("end", it.end());
             list.add(nbt);
-        }
+        });
         setTarget(ctx, list);
         return list.size();
     }
@@ -342,12 +341,12 @@ public final class StringCommands {
         var regex = Pattern.compile(p);
         var matcher = regex.matcher(src);
         var list = new ListTag();
-        for (MatchResult r : StringExtension.matchesAllFully(matcher)) {
+        StringExtension.matchesAllFully(matcher, it -> {
             var nbt = new CompoundTag();
-            nbt.putInt("start", r.start());
-            nbt.putInt("end", r.end());
+            nbt.putInt("start", it.start());
+            nbt.putInt("end", it.end());
             list.add(nbt);
-        }
+        });
         setTarget(ctx, list);
         return list.size();
     }
@@ -362,10 +361,10 @@ public final class StringCommands {
             if (s.isEmpty()) {
                 result = "";
             } else {
-                char[] chars = str.getAsString().toCharArray();
+                var chars = str.getAsString().toCharArray();
                 var sb = new StringBuilder((chars.length - 1) * delimiter.length() + 1);
                 sb.append(chars[0]);
-                for (int i = 1; i < chars.length; ) {
+                for (var i = 1; i < chars.length; ) {
                     sb.append(delimiter).append(chars[i++]);
                 }
                 result = sb.toString();
@@ -375,8 +374,8 @@ public final class StringCommands {
                 result = "";
             } else {
                 var sb = new StringBuilder();
-                boolean first = true;
-                for (Tag tag : list) {
+                var first = true;
+                for (var tag : list) {
                     if (first) {
                         first = false;
                     } else {
@@ -406,10 +405,10 @@ public final class StringCommands {
     public static int substring(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 2);
         var src = getNbtValueAsString(ctx.sources[0]);
-        int begin = StringExtension.convertAndCheckIndexWider(getNbtValueAsInt(ctx.sources[1]), src);
+        var begin = StringExtension.convertAndCheckIndexWider(getNbtValueAsInt(ctx.sources[1]), src);
         String result;
         if (ctx.sources.length > 2) {
-            int end = getNbtValueAsInt(ctx.sources[2]);
+            var end = getNbtValueAsInt(ctx.sources[2]);
             checkInt(end, begin - src.length(), -1, begin, src.length());
             result = src.substring(begin, StringExtension.convertIndex(end, src));
         } else {
@@ -421,10 +420,10 @@ public final class StringCommands {
     public static int substring2(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 2);
         var src = getNbtValueAsString(ctx.sources[0]);
-        int begin = StringExtension.convertAndCheckIndexWider(getNbtValueAsInt(ctx.sources[1]), src);
+        var begin = StringExtension.convertAndCheckIndexWider(getNbtValueAsInt(ctx.sources[1]), src);
         String result;
         if (ctx.sources.length > 2) {
-            int length = getNbtValueAsInt(ctx.sources[2]);
+            var length = getNbtValueAsInt(ctx.sources[2]);
             checkInt(length, 0, src.length() - begin);
             result = src.substring(begin, begin + length);
         } else {
@@ -439,14 +438,14 @@ public final class StringCommands {
         var sep = getNbtValueAsString(ctx.sources[1]);
         String[] result;
         if (ctx.sources.length > 2) {
-            int i = getNbtValueAsInt(ctx.sources[2]);
+            var i = getNbtValueAsInt(ctx.sources[2]);
             checkInt(i, 0, Integer.MAX_VALUE);
             result = src.split(sep, i);
         } else {
             result = src.split(sep);
         }
-        ListTag list = new ListTag();
-        for (String s : result) {
+        var list = new ListTag();
+        for (var s : result) {
             list.add(StringTag.valueOf(s));
         }
         setTarget(ctx, list);
@@ -455,8 +454,8 @@ public final class StringCommands {
 
     public static int indexOf(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 2);
-        String src = getNbtValueAsString(ctx.sources[0]);
-        String sub = getNbtValueAsString(ctx.sources[1]);
+        var src = getNbtValueAsString(ctx.sources[0]);
+        var sub = getNbtValueAsString(ctx.sources[1]);
         if (ctx.sources.length > 2) {
             return src.indexOf(sub, StringExtension.convertAndCheckIndexWider(getNbtValueAsInt(ctx.sources[2]), src));
         } else {
@@ -466,8 +465,8 @@ public final class StringCommands {
 
     public static int lastIndexOf(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 2);
-        String src = getNbtValueAsString(ctx.sources[0]);
-        String sub = getNbtValueAsString(ctx.sources[1]);
+        var src = getNbtValueAsString(ctx.sources[0]);
+        var sub = getNbtValueAsString(ctx.sources[1]);
         if (ctx.sources.length > 2) {
             return src.lastIndexOf(sub, StringExtension.convertAndCheckIndexWider(getNbtValueAsInt(ctx.sources[2]), src));
         } else {
