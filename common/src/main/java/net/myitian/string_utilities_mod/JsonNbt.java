@@ -1,0 +1,51 @@
+package net.myitian.string_utilities_mod;
+
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonWriter;
+import net.minecraft.nbt.*;
+
+import java.io.IOException;
+import java.io.StringWriter;
+
+public class JsonNbt {
+    public static String convert(Tag element, boolean isPrettyPrinting) {
+        var gb = new GsonBuilder().disableHtmlEscaping();
+        if (isPrettyPrinting)
+            gb.setPrettyPrinting();
+        var gson = gb.create();
+        try (var writer = new StringWriter(); var jw = gson.newJsonWriter(writer)) {
+            convert(jw, element);
+            return writer.toString();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static void convert(JsonWriter writer, Tag element) throws IOException {
+        if (element instanceof CompoundTag compound) {
+            writer.beginObject();
+            for (var childKey : compound.getAllKeys()) {
+                var child = compound.get(childKey);
+                writer.name(childKey);
+                convert(writer, child);
+            }
+            writer.endObject();
+        } else if (element instanceof CollectionTag<?> list) {
+            writer.beginArray();
+            for (var item : list) {
+                convert(writer, item);
+            }
+            writer.endArray();
+        } else if (element instanceof EndTag) {
+            writer.nullValue();
+        } else if (element instanceof FloatTag nbtFloat) {
+            writer.value(nbtFloat.getAsFloat());
+        } else if (element instanceof DoubleTag nbtDouble) {
+            writer.value(nbtDouble.getAsDouble());
+        } else if (element instanceof NumericTag number) {
+            writer.value(number.getAsLong());
+        } else if (element instanceof StringTag nbtString) {
+            writer.value(nbtString.getAsString());
+        }
+    }
+}

@@ -1,22 +1,26 @@
 # String Utilities Mod
+
 A mod that provides more NBT string operations.\
 一个提供更多 NBT 字符串操作的模组。
 
 ## Syntax 语法
+
 `/string <method> [target] [source...]`
 
 The `target` and `source` parts are similar to what follows the `data modify` command.\
 `target`和`source`部分与`data modify`命令后面的部分类似。
 
 ## Example 例子
-`/string isEmpty value ""` returns 1\
-`/string indexOf value "asdfghjkl" value "qwerty"` returns -1\
-`/string escape storage a:b c value '\'quote"slash\\'` stores `'quote\"slash\\` into `foo:bar/baz`\
-`/string strip storage foo:bar baz value "  a 123   "` stores `a 123` into `foo:bar/baz`\
-`/string concat2 storage a b from entity @s SelectedItem.id from entity @s Inventory[0].id`\
-`/string join storage test playerUUID from value "~" from @s UUID`\
+
+- `/string isEmpty value ""` returns 1
+- `/string indexOf value "asdfghjkl" value "qwerty"` returns -1
+- `/string escape storage a:b c value '\'quote"slash\\'` stores `'quote\"slash\\` into `foo:bar/baz`
+- `/string strip storage foo:bar baz value "  a 123   "` stores `a 123` into `foo:bar/baz`
+- `/string concat2 storage a b from entity @s SelectedItem.id from entity @s Inventory[0].id`
+- `/string join storage test playerUUID from value "~" from @s UUID`
 
 ## Available Methods 可用的方法
+
 | Name               | Source                                          | Target                               | Return Value                                                                                 |
 |--------------------|-------------------------------------------------|--------------------------------------|----------------------------------------------------------------------------------------------|
 | isBlank            | String                                          | -                                    | 1 if the input is a blank string, 0 otherwise.                                               |
