@@ -287,35 +287,27 @@ public final class StringCommands {
         checkArgumentCount(ctx.sources, 2);
         var src = getNbtValueAsString(ctx.sources[0]);
         int i = StringExtension.convertAndCheckIndex(getNbtValueAsInt(ctx.sources[1]), src);
-        return setTarget(ctx, Character.toString(src.charAt(i)));
+        char cp = src.charAt(i);
+        setTarget(ctx, Character.toString(cp));
+        return cp;
     }
 
     public static int codePointAt(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 2);
         var src = getNbtValueAsString(ctx.sources[0]);
         int i = StringExtension.convertAndCheckIndex(getNbtValueAsInt(ctx.sources[1]), src);
-        return src.codePointAt(i);
-    }
-
-    public static int codePointStringAt(StringCommandContext ctx) throws CommandSyntaxException {
-        checkArgumentCount(ctx.sources, 2);
-        var src = getNbtValueAsString(ctx.sources[0]);
-        int i = StringExtension.convertAndCheckIndex(getNbtValueAsInt(ctx.sources[1]), src);
-        return setTarget(ctx, Character.toString(src.codePointAt(i)));
+        int cp = src.codePointAt(i);
+        setTarget(ctx, Character.toString(cp));
+        return cp;
     }
 
     public static int codePointBefore(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 2);
         var src = getNbtValueAsString(ctx.sources[0]);
         int i = StringExtension.convertAndCheckIndexBefore(getNbtValueAsInt(ctx.sources[1]), src);
-        return src.codePointBefore(i);
-    }
-
-    public static int codePointStringBefore(StringCommandContext ctx) throws CommandSyntaxException {
-        checkArgumentCount(ctx.sources, 2);
-        var src = getNbtValueAsString(ctx.sources[0]);
-        int i = StringExtension.convertAndCheckIndexBefore(getNbtValueAsInt(ctx.sources[1]), src);
-        return setTarget(ctx, Character.toString(src.codePointBefore(i)));
+        int cp = src.codePointBefore(i);
+        setTarget(ctx, Character.toString(cp));
+        return cp;
     }
 
     public static int repeat(StringCommandContext ctx) throws CommandSyntaxException {

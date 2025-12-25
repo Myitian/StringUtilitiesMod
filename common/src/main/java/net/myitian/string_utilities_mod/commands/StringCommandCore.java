@@ -99,25 +99,13 @@ public final class StringCommandCore {
                 "indexSourcePath",
                 "indexValue",
                 StringCommands::at))
-            .then(addTwoInOneOutArgument("codePointStringAt",
-                "sourcePath",
-                "value",
-                "indexSourcePath",
-                "indexValue",
-                StringCommands::codePointStringAt))
-            .then(addTwoInOneOutArgument("codePointStringBefore",
-                "sourcePath",
-                "value",
-                "indexSourcePath",
-                "indexValue",
-                StringCommands::codePointStringBefore))
-            .then(addTwoInZeroOutArgument("codePointAt",
+            .then(addTwoInOneOutArgument("codePointAt",
                 "sourcePath",
                 "value",
                 "indexSourcePath",
                 "indexValue",
                 StringCommands::codePointAt))
-            .then(addTwoInZeroOutArgument("codePointBefore",
+            .then(addTwoInOneOutArgument("codePointBefore",
                 "sourcePath",
                 "value",
                 "indexSourcePath",
