@@ -21,22 +21,22 @@ public final class StringCommandCore {
     public static final DynamicCommandExceptionType EXPECTED_LIST_EXCEPTION =
         new DynamicCommandExceptionType(nbt -> Component.translatable("commands.data.modify.expected_list", nbt));
     public static final SimpleCommandExceptionType TOO_FEW_ARGUMENT_EXCEPTION = // Too few arguments
-        new SimpleCommandExceptionType(Component.translatable("commands.string-utilities.string.too_few_arguments"));
+        new SimpleCommandExceptionType(Component.translatable("commands.string_utilities.string.too_few_arguments"));
     public static final DynamicCommandExceptionType INVALID_CHAR_ARRAY_EXCEPTION = // Invalid char array: %s
-        new DynamicCommandExceptionType(name -> Component.translatable("commands.string-utilities.string.invalid_char_array", name));
+        new DynamicCommandExceptionType(name -> Component.translatable("commands.string_utilities.string.invalid_char_array", name));
     public static final DynamicCommandExceptionType EXPECTED_STRING_EXCEPTION = // Invalid argument type: %s, expected String
-        new DynamicCommandExceptionType(name -> Component.translatable("commands.string-utilities.string.unexpected_type", name, StringTag.TYPE.getPrettyName()));
+        new DynamicCommandExceptionType(name -> Component.translatable("commands.string_utilities.string.unexpected_type", name, StringTag.TYPE.getPrettyName()));
     public static final DynamicCommandExceptionType EXPECTED_INT_ARRAY_EXCEPTION = // Invalid argument type: %s, expected IntArray
-        new DynamicCommandExceptionType(name -> Component.translatable("commands.string-utilities.string.unexpected_type", name, IntArrayTag.TYPE.getPrettyName()));
+        new DynamicCommandExceptionType(name -> Component.translatable("commands.string_utilities.string.unexpected_type", name, IntArrayTag.TYPE.getPrettyName()));
     public static final DynamicCommandExceptionType EXPECTED_INT_EXCEPTION = // Invalid argument type: %s, expected Int
-        new DynamicCommandExceptionType(name -> Component.translatable("commands.string-utilities.string.unexpected_type", name, IntTag.TYPE.getPrettyName()));
+        new DynamicCommandExceptionType(name -> Component.translatable("commands.string_utilities.string.unexpected_type", name, IntTag.TYPE.getPrettyName()));
 
     public static final Dynamic2CommandExceptionType INTEGER_TOO_LOW =
         new Dynamic2CommandExceptionType((found, min) -> Component.translatable("argument.integer.low", min, found));
     public static final Dynamic2CommandExceptionType INTEGER_TOO_HIGH =
         new Dynamic2CommandExceptionType((found, max) -> Component.translatable("argument.integer.big", max, found));
     public static final Dynamic3CommandExceptionType INTEGER_NOT_IN_RANGE_2 =
-        new Dynamic3CommandExceptionType((found, range0, range1) -> Component.translatable("argument.string-utilities.integer.not_in_range", found, range0, range1));
+        new Dynamic3CommandExceptionType((found, range0, range1) -> Component.translatable("argument.string_utilities.integer.not_in_range", found, range0, range1));
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         var stringCommand = Commands.literal("string")
