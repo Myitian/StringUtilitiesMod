@@ -11,6 +11,8 @@ subprojects {
     apply plugin: "dev.architectury.loom"
 
     if (project.name == "forge-1.20.6") {
+        // forge uses official mappings for method names in 1.20.6+, instead of SRG names in 1.20.4-.
+        // so here compile same code with different forge versions.
         return
     }
 
