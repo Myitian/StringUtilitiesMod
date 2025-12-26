@@ -275,7 +275,11 @@ public final class StringCommandCore {
         var tc = getTag(ctx.sources[1]);
         var trimChars = new CharOpenHashSet();
         if (tc instanceof StringTag str) {
-            trimChars.addAll(str.getAsString().toCharArray());
+            String s = str.getAsString();
+            int length = s.length();
+            for (int i = 0; i < length; i++) {
+                trimChars.add(s.charAt(i));
+            }
         } else if (tc instanceof ListTag list) {
             var len = list.size();
             for (var i = 0; i < len; i++) {
