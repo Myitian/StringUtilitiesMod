@@ -26,8 +26,6 @@ public final class StringCommandCore {
         new DynamicCommandExceptionType(name -> Component.translatable("commands.string-utilities.string.invalid_char_array", name));
     public static final DynamicCommandExceptionType EXPECTED_STRING_EXCEPTION = // Invalid argument type: %s, expected String
         new DynamicCommandExceptionType(name -> Component.translatable("commands.string-utilities.string.unexpected_type", name, StringTag.TYPE.getPrettyName()));
-    public static final DynamicCommandExceptionType EXPECTED_INT_ARRAY_EXCEPTION = // Invalid argument type: %s, expected IntArray
-        new DynamicCommandExceptionType(name -> Component.translatable("commands.string-utilities.string.unexpected_type", name, IntArrayTag.TYPE.getPrettyName()));
     public static final DynamicCommandExceptionType EXPECTED_INT_EXCEPTION = // Invalid argument type: %s, expected Int
         new DynamicCommandExceptionType(name -> Component.translatable("commands.string-utilities.string.unexpected_type", name, IntTag.TYPE.getPrettyName()));
 
@@ -238,20 +236,26 @@ public final class StringCommandCore {
     public static Tag getTag(Tuple<Tag, NbtPathArgument.NbtPath> pair) throws CommandSyntaxException {
         var l = pair.getA();
         var r = pair.getB();
-        return (r == null ? l : r.get(l).get(0));
+        return (r == null ? l : r.get(l).getFirst());
     }
 
     public static int getNbtValueAsInt(Tuple<Tag, NbtPathArgument.NbtPath> pair) throws CommandSyntaxException {
         var e = getTag(pair);
-        if (e instanceof NumericTag num) {
-            return num.getAsInt();
+        var num = e.asInt();
+        if (num.isPresent()) {
+            return num.get();
         } else {
             throw EXPECTED_INT_EXCEPTION.create(e.getType().getPrettyName());
         }
     }
 
     public static String getNbtValueAsString(Tuple<Tag, NbtPathArgument.NbtPath> pair) throws CommandSyntaxException {
-        return getTag(pair).getAsString();
+        var e = getTag(pair);
+        return getString(e);
+    }
+
+    public static String getString(Tag e) {
+        return e.asString().orElseGet(e::toString);
     }
 
     public static int toInt(boolean bool) {
@@ -275,13 +279,13 @@ public final class StringCommandCore {
         var tc = getTag(ctx.sources[1]);
         var trimChars = new CharOpenHashSet();
         if (tc instanceof StringTag str) {
-            for (var c : str.getAsString().toCharArray()) {
+            for (var c : getString(str).toCharArray()) {
                 trimChars.add(c);
             }
-        } else if (tc instanceof ListTag list && list.getElementType() == Tag.TAG_STRING) {
+        } else if (tc instanceof ListTag list) {
             var len = list.size();
             for (var i = 0; i < len; i++) {
-                var str = list.get(i).getAsString();
+                var str = getString(list.get(i));
                 if (str.length() != 1) {
                     throw INVALID_CHAR_ARRAY_EXCEPTION.create(list);
                 }

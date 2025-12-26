@@ -12,15 +12,8 @@ description = "${mod_description}"
 logoFile = "logo.png"
 
 [[dependencies.${ mod_id }]]
-modId = "neoforge"
-type = "required"
-versionRange = "[1,)"
-ordering = "NONE"
-side = "BOTH"
-
-[[dependencies.${ mod_id }]]
 modId = "minecraft"
-type = "required"
-versionRange = "${supported_minecraft_version_neoforge}"
+mandatory = true
+versionRange = "${supported_minecraft_version_forge}"
 ordering = "NONE"
 side = "BOTH"

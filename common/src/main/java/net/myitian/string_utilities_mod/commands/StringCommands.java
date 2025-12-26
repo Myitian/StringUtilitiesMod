@@ -1,7 +1,6 @@
 package net.myitian.string_utilities_mod.commands;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import it.unimi.dsi.fastutil.chars.CharSet;
 import net.minecraft.nbt.*;
 import net.myitian.string_utilities_mod.JsonNbt;
 import net.myitian.string_utilities_mod.StringExtension;
@@ -138,18 +137,20 @@ public final class StringCommands {
         checkArgumentCount(ctx.sources, 1);
         var element = getTag(ctx.sources[0]);
         String result;
-        if (!(element instanceof CollectionTag<?> list)) {
+        if (!(element instanceof CollectionTag list)) {
             throw EXPECTED_LIST_EXCEPTION.create(element);
         } else if (list.isEmpty()) {
             result = "";
         } else {
             var size = list.size();
             var sb = new StringBuilder();
-            if (!(list.get(0) instanceof NumericTag)) {
-                throw EXPECTED_INT_ARRAY_EXCEPTION.create(element.getType().getPrettyName());
-            }
             for (var i = 0; i < size; i++) {
-                sb.appendCodePoint(((NumericTag) list.get(i)).getAsInt());
+                var e = list.get(i);
+                var cp = list.get(i).asInt();
+                if (cp.isEmpty()) {
+                    throw EXPECTED_INT_EXCEPTION.create(e.getType().getPrettyName());
+                }
+                sb.appendCodePoint(cp.get());
             }
             result = sb.toString();
         }
@@ -239,13 +240,13 @@ public final class StringCommands {
     public static int concat(StringCommandContext ctx) throws CommandSyntaxException {
         checkArgumentCount(ctx.sources, 1);
         var element = getTag(ctx.sources[0]);
-        if (!(element instanceof CollectionTag<?> list)) {
+        if (!(element instanceof CollectionTag list)) {
             throw EXPECTED_LIST_EXCEPTION.create(element);
         }
         var strings = new String[list.size()];
         var len = 0;
         for (var i = 0; i < strings.length; i++) {
-            len += (strings[i] = list.get(i).getAsString()).length();
+            len += (strings[i] = getString(list.get(i))).length();
         }
         var sb = new StringBuilder(len);
         for (var string : strings) {
@@ -357,11 +358,11 @@ public final class StringCommands {
         var element = getTag(ctx.sources[1]);
         String result;
         if (element instanceof StringTag str) {
-            var s = str.getAsString();
+            var s = getString(str);
             if (s.isEmpty()) {
                 result = "";
             } else {
-                var chars = str.getAsString().toCharArray();
+                var chars = s.toCharArray();
                 var sb = new StringBuilder((chars.length - 1) * delimiter.length() + 1);
                 sb.append(chars[0]);
                 for (var i = 1; i < chars.length; ) {
@@ -369,7 +370,7 @@ public final class StringCommands {
                 }
                 result = sb.toString();
             }
-        } else if (element instanceof CollectionTag<?> list) {
+        } else if (element instanceof CollectionTag list) {
             if (list.isEmpty()) {
                 result = "";
             } else {
@@ -381,7 +382,7 @@ public final class StringCommands {
                     } else {
                         sb.append(delimiter);
                     }
-                    sb.append(tag.getAsString());
+                    sb.append(getString(tag));
                 }
                 result = sb.toString();
             }

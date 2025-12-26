@@ -23,6 +23,10 @@ dependencies {
     forge "net.minecraftforge:forge:${project.forge_version}"
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+    common(project(path: ":forge", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":forge", configuration: "namedElements")) { transitive = false }
+    common(project(path: ":neoforge", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":neoforge", configuration: "namedElements")) { transitive = false }
 }
 
 shadowJar {
@@ -37,7 +41,14 @@ remapJar {
 }
 
 sourcesJar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     def commonSources = project(":common").sourcesJar
     dependsOn commonSources
     from commonSources.archiveFile.map { zipTree(it) }
+    def forgeSources = project(":forge").sourcesJar
+    dependsOn forgeSources
+    from forgeSources.archiveFile.map { zipTree(it) }
+    def neoforgeSources = project(":neoforge").sourcesJar
+    dependsOn neoforgeSources
+    from neoforgeSources.archiveFile.map { zipTree(it) }
 }
