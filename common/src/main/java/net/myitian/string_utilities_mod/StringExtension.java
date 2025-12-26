@@ -2,13 +2,12 @@ package net.myitian.string_utilities_mod;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import it.unimi.dsi.fastutil.chars.CharSet;
+import net.myitian.string_utilities_mod.commands.StringCommandCore;
 
 import java.text.BreakIterator;
 import java.util.function.Consumer;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
-
-import static net.myitian.string_utilities_mod.commands.StringCommandCore.checkInt;
 
 public class StringExtension {
     public static void iterate(BreakIterator bi, String text, Consumer<String> consumer) {
@@ -97,12 +96,36 @@ public class StringExtension {
     }
 
     public static int convertAndCheckIndex(int index, String s) throws CommandSyntaxException {
+        if (s.isEmpty()) throw StringCommandCore.STRING_EMPTY_EXCEPTION.create();
         checkInt(index, -s.length(), s.length() - 1);
         return convertIndex(index, s);
     }
 
     public static int convertAndCheckIndexBefore(int index, String s) throws CommandSyntaxException {
+        if (s.isEmpty()) throw StringCommandCore.STRING_EMPTY_EXCEPTION.create();
         checkInt(index, 1 - s.length(), -1, 1, s.length());
         return convertIndex(index, s);
+    }
+
+    public static void checkInt(int value, int min, int max) throws CommandSyntaxException {
+        if (value < min) {
+            throw StringCommandCore.INTEGER_TOO_LOW_EXCEPTION.create(value, min);
+        } else if (value > max) {
+            throw StringCommandCore.INTEGER_TOO_HIGH_EXCEPTION.create(value, max);
+        }
+    }
+
+    public static void checkInt(int value, int range0min, int range0max, int range1min, int range1max) throws CommandSyntaxException {
+        var min = Math.min(range0min, range1min);
+        var max = Math.max(range0max, range1max);
+        if (value < min) {
+            throw StringCommandCore.INTEGER_TOO_LOW_EXCEPTION.create(value, min);
+        } else if (value > max) {
+            throw StringCommandCore.INTEGER_TOO_HIGH_EXCEPTION.create(value, max);
+        } else if ((value > range0max && value < range1min) || (value > range1max && value < range0min)) {
+            throw StringCommandCore.INTEGER_NOT_IN_RANGE_2_EXCEPTION.create(value,
+                "[" + range0min + ".." + range0max + "]",
+                "[" + range1min + ".." + range1max + "]");
+        }
     }
 }

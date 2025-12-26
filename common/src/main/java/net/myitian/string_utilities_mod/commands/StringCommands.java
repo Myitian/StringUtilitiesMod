@@ -312,7 +312,7 @@ public final class StringCommands {
         checkArgumentCount(ctx.sources, 2);
         var src = getNbtValueAsString(ctx.sources[0]);
         var r = getNbtValueAsInt(ctx.sources[1]);
-        checkInt(r, 0, Integer.MAX_VALUE);
+        StringExtension.checkInt(r, 0, Integer.MAX_VALUE);
         return setTarget(ctx, src.repeat(r));
     }
 
@@ -408,7 +408,7 @@ public final class StringCommands {
         String result;
         if (ctx.sources.length > 2) {
             var end = getNbtValueAsInt(ctx.sources[2]);
-            checkInt(end, begin - src.length(), -1, begin, src.length());
+            StringExtension.checkInt(end, begin - src.length(), -1, begin, src.length());
             result = src.substring(begin, StringExtension.convertIndex(end, src));
         } else {
             result = src.substring(begin);
@@ -423,7 +423,7 @@ public final class StringCommands {
         String result;
         if (ctx.sources.length > 2) {
             var length = getNbtValueAsInt(ctx.sources[2]);
-            checkInt(length, 0, src.length() - begin);
+            StringExtension.checkInt(length, 0, src.length() - begin);
             result = src.substring(begin, begin + length);
         } else {
             result = src.substring(begin);
@@ -438,7 +438,7 @@ public final class StringCommands {
         String[] result;
         if (ctx.sources.length > 2) {
             var i = getNbtValueAsInt(ctx.sources[2]);
-            checkInt(i, 0, Integer.MAX_VALUE);
+            StringExtension.checkInt(i, 0, Integer.MAX_VALUE);
             result = src.split(sep, i);
         } else {
             result = src.split(sep);

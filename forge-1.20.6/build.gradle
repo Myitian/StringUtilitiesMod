@@ -2,6 +2,8 @@ plugins {
     id "com.gradleup.shadow" version "9.2.2"
 }
 
+version = "${project.mod_version}-forge-1.20.6"
+
 architectury {
     platformSetupLoomIde()
     forge()
@@ -20,9 +22,18 @@ shadow {
 }
 
 dependencies {
-    forge "net.minecraftforge:forge:${project.forge_version}"
+    configurations.minecraft.dependencies.clear()
+    configurations.mappings.dependencies.clear()
+    minecraft "com.mojang:minecraft:1.20.6"
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-1.20.6:2024.06.16@zip")
+    }
+    forge "net.minecraftforge:forge:1.20.6-50.2.4"
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+    common(project(path: ":forge", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":forge", configuration: "namedElements")) { transitive = false }
 }
 
 shadowJar {
@@ -37,7 +48,11 @@ remapJar {
 }
 
 sourcesJar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     def commonSources = project(":common").sourcesJar
     dependsOn commonSources
     from commonSources.archiveFile.map { zipTree(it) }
+    def forgeSources = project(":forge").sourcesJar
+    dependsOn forgeSources
+    from forgeSources.archiveFile.map { zipTree(it) }
 }

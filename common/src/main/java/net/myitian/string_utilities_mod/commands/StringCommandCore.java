@@ -19,24 +19,58 @@ import java.util.function.BiFunction;
 
 public final class StringCommandCore {
     public static final DynamicCommandExceptionType EXPECTED_LIST_EXCEPTION =
-        new DynamicCommandExceptionType(nbt -> Component.translatable("commands.data.modify.expected_list", nbt));
-    public static final SimpleCommandExceptionType TOO_FEW_ARGUMENT_EXCEPTION = // Too few arguments
-        new SimpleCommandExceptionType(Component.translatable("commands.string_utilities.string.too_few_arguments"));
-    public static final DynamicCommandExceptionType INVALID_CHAR_ARRAY_EXCEPTION = // Invalid char array: %s
-        new DynamicCommandExceptionType(name -> Component.translatable("commands.string_utilities.string.invalid_char_array", name));
-    public static final DynamicCommandExceptionType EXPECTED_STRING_EXCEPTION = // Invalid argument type: %s, expected String
-        new DynamicCommandExceptionType(name -> Component.translatable("commands.string_utilities.string.unexpected_type", name, StringTag.TYPE.getPrettyName()));
-    public static final DynamicCommandExceptionType EXPECTED_INT_ARRAY_EXCEPTION = // Invalid argument type: %s, expected IntArray
-        new DynamicCommandExceptionType(name -> Component.translatable("commands.string_utilities.string.unexpected_type", name, IntArrayTag.TYPE.getPrettyName()));
-    public static final DynamicCommandExceptionType EXPECTED_INT_EXCEPTION = // Invalid argument type: %s, expected Int
-        new DynamicCommandExceptionType(name -> Component.translatable("commands.string_utilities.string.unexpected_type", name, IntTag.TYPE.getPrettyName()));
+        new DynamicCommandExceptionType(nbt -> Component.translatable(
+            "commands.data.modify.expected_list",
+            nbt));
+    public static final SimpleCommandExceptionType TOO_FEW_ARGUMENT_EXCEPTION =
+        new SimpleCommandExceptionType(Component.translatableWithFallback(
+            "commands.string_utilities.string.too_few_arguments",
+            "Too few arguments"));
+    public static final DynamicCommandExceptionType INVALID_CHAR_ARRAY_EXCEPTION =
+        new DynamicCommandExceptionType(name -> Component.translatableWithFallback(
+            "commands.string_utilities.string.invalid_char_array",
+            "Invalid char array: %s",
+            name));
+    public static final DynamicCommandExceptionType EXPECTED_STRING_EXCEPTION =
+        new DynamicCommandExceptionType(name -> Component.translatableWithFallback(
+            "commands.string_utilities.string.unexpected_type",
+            "Invalid argument type: %s, expected %s",
+            name,
+            StringTag.TYPE.getPrettyName()));
+    public static final DynamicCommandExceptionType EXPECTED_INT_ARRAY_EXCEPTION =
+        new DynamicCommandExceptionType(name -> Component.translatableWithFallback(
+            "commands.string_utilities.string.unexpected_type",
+            "Invalid argument type: %s, expected %s",
+            name,
+            IntArrayTag.TYPE.getPrettyName()));
+    public static final DynamicCommandExceptionType EXPECTED_INT_EXCEPTION =
+        new DynamicCommandExceptionType(name -> Component.translatableWithFallback(
+            "commands.string_utilities.string.unexpected_type",
+            "Invalid argument type: %s, expected %s",
+            name,
+            IntTag.TYPE.getPrettyName()));
 
-    public static final Dynamic2CommandExceptionType INTEGER_TOO_LOW =
-        new Dynamic2CommandExceptionType((found, min) -> Component.translatable("argument.integer.low", min, found));
-    public static final Dynamic2CommandExceptionType INTEGER_TOO_HIGH =
-        new Dynamic2CommandExceptionType((found, max) -> Component.translatable("argument.integer.big", max, found));
-    public static final Dynamic3CommandExceptionType INTEGER_NOT_IN_RANGE_2 =
-        new Dynamic3CommandExceptionType((found, range0, range1) -> Component.translatable("argument.string_utilities.integer.not_in_range", found, range0, range1));
+    public static final Dynamic2CommandExceptionType INTEGER_TOO_LOW_EXCEPTION =
+        new Dynamic2CommandExceptionType((found, min) -> Component.translatable(
+            "argument.integer.low",
+            min,
+            found));
+    public static final Dynamic2CommandExceptionType INTEGER_TOO_HIGH_EXCEPTION =
+        new Dynamic2CommandExceptionType((found, max) -> Component.translatable(
+            "argument.integer.big",
+            max,
+            found));
+    public static final Dynamic3CommandExceptionType INTEGER_NOT_IN_RANGE_2_EXCEPTION =
+        new Dynamic3CommandExceptionType((found, range0, range1) -> Component.translatableWithFallback(
+            "argument.string_utilities.integer.not_in_range",
+            "Integer %s is not in range %s and %s",
+            found,
+            range0,
+            range1));
+    public static final SimpleCommandExceptionType STRING_EMPTY_EXCEPTION =
+        new SimpleCommandExceptionType(Component.translatableWithFallback(
+            "argument.string_utilities.string.empty",
+            "String cannot be empty"));
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         var stringCommand = Commands.literal("string")
@@ -344,7 +378,7 @@ public final class StringCommandCore {
                 ctx -> command.apply(new StringCommandContext(ctx,
                     null,
                     null,
-                    source.CreatePair(ctx)))));
+                    source.createPair(ctx)))));
     }
 
     public static ArgumentBuilder<CommandSourceStack, ?> addOneInOneOutArgument(
@@ -358,7 +392,7 @@ public final class StringCommandCore {
                     ctx -> command.apply(new StringCommandContext(ctx,
                         target.access(ctx),
                         NbtPathArgument.getPath(ctx, "targetPath"),
-                        source.CreatePair(ctx))))));
+                        source.createPair(ctx))))));
     }
 
     public static ArgumentBuilder<CommandSourceStack, ?> addOneInOneOptionalInOneOutArgument(
@@ -376,15 +410,15 @@ public final class StringCommandCore {
                     innerBuilder.executes(ctx -> command.apply(new StringCommandContext(ctx,
                         target.access(ctx),
                         NbtPathArgument.getPath(ctx, "targetPath"),
-                        source0.CreatePair(ctx)))),
+                        source0.createPair(ctx)))),
                     sourcePathName1,
                     valueName1,
                     (inner2Builder, source1) -> inner2Builder.executes(
                         ctx -> command.apply(new StringCommandContext(ctx,
                             target.access(ctx),
                             NbtPathArgument.getPath(ctx, "targetPath"),
-                            source0.CreatePair(ctx),
-                            source1.CreatePair(ctx)))))));
+                            source0.createPair(ctx),
+                            source1.createPair(ctx)))))));
     }
 
     public static ArgumentBuilder<CommandSourceStack, ?> addTwoInZeroOutArgument(
@@ -404,8 +438,8 @@ public final class StringCommandCore {
                     ctx -> command.apply(new StringCommandContext(ctx,
                         null,
                         null,
-                        source0.CreatePair(ctx),
-                        source1.CreatePair(ctx))))));
+                        source0.createPair(ctx),
+                        source1.createPair(ctx))))));
     }
 
     public static ArgumentBuilder<CommandSourceStack, ?> addTwoInOneOutArgument(
@@ -426,8 +460,8 @@ public final class StringCommandCore {
                         ctx -> command.apply(new StringCommandContext(ctx,
                             target.access(ctx),
                             NbtPathArgument.getPath(ctx, "targetPath"),
-                            source0.CreatePair(ctx),
-                            source1.CreatePair(ctx)))))));
+                            source0.createPair(ctx),
+                            source1.createPair(ctx)))))));
     }
 
     public static ArgumentBuilder<CommandSourceStack, ?> addTwoInOneOptionalInZeroOutArgument(
@@ -449,17 +483,17 @@ public final class StringCommandCore {
                     inner1Builder.executes(ctx -> command.apply(new StringCommandContext(ctx,
                         null,
                         null,
-                        source0.CreatePair(ctx),
-                        source1.CreatePair(ctx)))),
+                        source0.createPair(ctx),
+                        source1.createPair(ctx)))),
                     sourcePathName2,
                     valueName2,
                     (inner2Builder, source2) -> inner2Builder.executes(
                         ctx -> command.apply(new StringCommandContext(ctx,
                             null,
                             null,
-                            source0.CreatePair(ctx),
-                            source1.CreatePair(ctx),
-                            source2.CreatePair(ctx)))))));
+                            source0.createPair(ctx),
+                            source1.createPair(ctx),
+                            source2.createPair(ctx)))))));
     }
 
     public static ArgumentBuilder<CommandSourceStack, ?> addTwoInOneOptionalInOneOutArgument(
@@ -482,17 +516,17 @@ public final class StringCommandCore {
                         inner2Builder.executes(ctx -> command.apply(new StringCommandContext(ctx,
                             target.access(ctx),
                             NbtPathArgument.getPath(ctx, "targetPath"),
-                            source0.CreatePair(ctx),
-                            source1.CreatePair(ctx)))),
+                            source0.createPair(ctx),
+                            source1.createPair(ctx)))),
                         sourcePathName2,
                         valueName2,
                         (inner3Builder, source2) -> inner3Builder.executes(
                             ctx -> command.apply(new StringCommandContext(ctx,
                                 target.access(ctx),
                                 NbtPathArgument.getPath(ctx, "targetPath"),
-                                source0.CreatePair(ctx),
-                                source1.CreatePair(ctx),
-                                source2.CreatePair(ctx))))))));
+                                source0.createPair(ctx),
+                                source1.createPair(ctx),
+                                source2.createPair(ctx))))))));
     }
 
     public static ArgumentBuilder<CommandSourceStack, ?> addThreeInOneOutArgument(
@@ -518,31 +552,9 @@ public final class StringCommandCore {
                             ctx -> command.apply(new StringCommandContext(ctx,
                                 target.access(ctx),
                                 NbtPathArgument.getPath(ctx, "targetPath"),
-                                source0.CreatePair(ctx),
-                                source1.CreatePair(ctx),
-                                source2.CreatePair(ctx))))))));
-    }
-
-    public static void checkInt(int value, int min, int max) throws CommandSyntaxException {
-        if (value < min) {
-            throw INTEGER_TOO_LOW.create(value, min);
-        } else if (value > max) {
-            throw INTEGER_TOO_HIGH.create(value, max);
-        }
-    }
-
-    public static void checkInt(int value, int range0min, int range0max, int range1min, int range1max) throws CommandSyntaxException {
-        var min = Math.min(range0min, range1min);
-        var max = Math.max(range0max, range1max);
-        if (value < min) {
-            throw INTEGER_TOO_LOW.create(value, min);
-        } else if (value > max) {
-            throw INTEGER_TOO_HIGH.create(value, max);
-        } else if ((value > range0max && value < range1min) || (value > range1max && value < range0min)) {
-            throw INTEGER_NOT_IN_RANGE_2.create(value,
-                "[" + range0min + ".." + range0max + "]",
-                "[" + range1min + ".." + range1max + "]");
-        }
+                                source0.createPair(ctx),
+                                source1.createPair(ctx),
+                                source2.createPair(ctx))))))));
     }
 
     @FunctionalInterface
@@ -553,9 +565,11 @@ public final class StringCommandCore {
     public abstract static class SourceGetter {
         public abstract Tag getSourceElement(CommandContext<CommandSourceStack> context) throws CommandSyntaxException;
 
-        public abstract NbtPathArgument.NbtPath getSourcePath(CommandContext<CommandSourceStack> context) throws CommandSyntaxException;
+        public NbtPathArgument.NbtPath getSourcePath(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+            return null;
+        }
 
-        public Tuple<Tag, NbtPathArgument.NbtPath> CreatePair(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        public final Tuple<Tag, NbtPathArgument.NbtPath> createPair(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
             return new Tuple<>(getSourceElement(context), getSourcePath(context));
         }
     }
@@ -569,10 +583,6 @@ public final class StringCommandCore {
 
         public Tag getSourceElement(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
             return source.access(context).getData();
-        }
-
-        public NbtPathArgument.NbtPath getSourcePath(CommandContext<CommandSourceStack> context) {
-            return null;
         }
     }
 
@@ -603,10 +613,6 @@ public final class StringCommandCore {
 
         public Tag getSourceElement(CommandContext<CommandSourceStack> context) {
             return NbtTagArgument.getNbtTag(context, valueName);
-        }
-
-        public NbtPathArgument.NbtPath getSourcePath(CommandContext<CommandSourceStack> context) {
-            return null;
         }
     }
 }
