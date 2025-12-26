@@ -2,7 +2,6 @@ package net.myitian.string_utilities_mod.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.*;
 import it.unimi.dsi.fastutil.chars.CharOpenHashSet;
 import it.unimi.dsi.fastutil.chars.CharSet;
@@ -14,6 +13,10 @@ import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.commands.data.DataCommands;
 import net.minecraft.util.Tuple;
+import net.myitian.string_utilities_mod.commands.sources.FromDirectNbtSource;
+import net.myitian.string_utilities_mod.commands.sources.FromPathNbtSource;
+import net.myitian.string_utilities_mod.commands.sources.NbtSource;
+import net.myitian.string_utilities_mod.commands.sources.ValueNbtSource;
 
 import java.util.function.BiFunction;
 
@@ -356,21 +359,21 @@ public final class StringCommandCore {
         ArgumentBuilder<CommandSourceStack, ?> argument,
         String sourcePathName,
         String valueName,
-        BiFunction<ArgumentBuilder<CommandSourceStack, ?>, SourceGetter, ArgumentBuilder<CommandSourceStack, ?>> argumentAdder) {
+        BiFunction<ArgumentBuilder<CommandSourceStack, ?>, NbtSource, ArgumentBuilder<CommandSourceStack, ?>> argumentAdder) {
         for (var source : DataCommands.SOURCE_PROVIDERS) {
             argument.then(source.wrap(Commands.literal("from"),
-                innerBuilder -> argumentAdder.apply(innerBuilder, new FromWithoutPathSourceGetter(source))
+                innerBuilder -> argumentAdder.apply(innerBuilder, new FromDirectNbtSource(source))
                     .then(argumentAdder.apply(Commands.argument(sourcePathName, NbtPathArgument.nbtPath()),
-                        new FromWithPathSourceGetter(source, sourcePathName)))));
+                        new FromPathNbtSource(source, sourcePathName)))));
         }
         argument.then(Commands.literal("value")
-            .then(argumentAdder.apply(Commands.argument(valueName, NbtTagArgument.nbtTag()), new ValueSourceGetter(valueName))));
+            .then(argumentAdder.apply(Commands.argument(valueName, NbtTagArgument.nbtTag()), new ValueNbtSource(valueName))));
         return argument;
     }
 
     public static ArgumentBuilder<CommandSourceStack, ?> addOneInZeroOutArgument(
         String name,
-        StringCommandExec command) {
+        StringCommandFunc command) {
         return addSource(Commands.literal(name),
             "sourcePath",
             "value",
@@ -383,7 +386,7 @@ public final class StringCommandCore {
 
     public static ArgumentBuilder<CommandSourceStack, ?> addOneInOneOutArgument(
         String name,
-        StringCommandExec command) {
+        StringCommandFunc command) {
         return addTarget(Commands.literal(name),
             (builder, target) -> addSource(builder,
                 "sourcePath",
@@ -401,7 +404,7 @@ public final class StringCommandCore {
         String valueName0,
         String sourcePathName1,
         String valueName1,
-        StringCommandExec command) {
+        StringCommandFunc command) {
         return addTarget(Commands.literal(name),
             (builder, target) -> addSource(builder,
                 sourcePathName0,
@@ -427,7 +430,7 @@ public final class StringCommandCore {
         String valueName0,
         String sourcePathName1,
         String valueName1,
-        StringCommandExec command) {
+        StringCommandFunc command) {
         return addSource(Commands.literal(name),
             sourcePathName0,
             valueName0,
@@ -448,7 +451,7 @@ public final class StringCommandCore {
         String valueName0,
         String sourcePathName1,
         String valueName1,
-        StringCommandExec command) {
+        StringCommandFunc command) {
         return addTarget(Commands.literal(name),
             (builder, target) -> addSource(builder,
                 sourcePathName0,
@@ -472,7 +475,7 @@ public final class StringCommandCore {
         String valueName1,
         String sourcePathName2,
         String valueName2,
-        StringCommandExec command) {
+        StringCommandFunc command) {
         return addSource(Commands.literal(name),
             sourcePathName0,
             valueName0,
@@ -504,7 +507,7 @@ public final class StringCommandCore {
         String valueName1,
         String sourcePathName2,
         String valueName2,
-        StringCommandExec command) {
+        StringCommandFunc command) {
         return addTarget(Commands.literal(name),
             (builder, target) -> addSource(builder,
                 sourcePathName0,
@@ -537,7 +540,7 @@ public final class StringCommandCore {
         String valueName1,
         String sourcePathName2,
         String valueName2,
-        StringCommandExec command) {
+        StringCommandFunc command) {
         return addTarget(Commands.literal(name),
             (builder, target) -> addSource(builder,
                 sourcePathName0,
@@ -555,64 +558,5 @@ public final class StringCommandCore {
                                 source0.createPair(ctx),
                                 source1.createPair(ctx),
                                 source2.createPair(ctx))))))));
-    }
-
-    @FunctionalInterface
-    public interface StringCommandExec {
-        int apply(StringCommandContext ctx) throws CommandSyntaxException;
-    }
-
-    public abstract static class SourceGetter {
-        public abstract Tag getSourceElement(CommandContext<CommandSourceStack> context) throws CommandSyntaxException;
-
-        public NbtPathArgument.NbtPath getSourcePath(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-            return null;
-        }
-
-        public final Tuple<Tag, NbtPathArgument.NbtPath> createPair(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-            return new Tuple<>(getSourceElement(context), getSourcePath(context));
-        }
-    }
-
-    public final static class FromWithoutPathSourceGetter extends SourceGetter {
-        private final DataCommands.DataProvider source;
-
-        public FromWithoutPathSourceGetter(DataCommands.DataProvider source) {
-            this.source = source;
-        }
-
-        public Tag getSourceElement(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-            return source.access(context).getData();
-        }
-    }
-
-    public final static class FromWithPathSourceGetter extends SourceGetter {
-        private final DataCommands.DataProvider source;
-        private final String sourcePathName;
-
-        public FromWithPathSourceGetter(DataCommands.DataProvider source, String sourcePathName) {
-            this.source = source;
-            this.sourcePathName = sourcePathName;
-        }
-
-        public Tag getSourceElement(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-            return source.access(context).getData();
-        }
-
-        public NbtPathArgument.NbtPath getSourcePath(CommandContext<CommandSourceStack> context) {
-            return NbtPathArgument.getPath(context, sourcePathName);
-        }
-    }
-
-    public static class ValueSourceGetter extends SourceGetter {
-        private final String valueName;
-
-        public ValueSourceGetter(String valueName) {
-            this.valueName = valueName;
-        }
-
-        public Tag getSourceElement(CommandContext<CommandSourceStack> context) {
-            return NbtTagArgument.getNbtTag(context, valueName);
-        }
     }
 }
