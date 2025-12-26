@@ -1,6 +1,5 @@
 package net.myitian.string_utilities_mod;
 
-import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.nbt.*;
 
@@ -9,14 +8,15 @@ import java.io.StringWriter;
 
 public class JsonNbt {
     public static String convert(Tag element, boolean isPrettyPrinting) {
-        var gb = new GsonBuilder().disableHtmlEscaping();
-        if (isPrettyPrinting)
-            gb.setPrettyPrinting();
-        var gson = gb.create();
-        try (var writer = new StringWriter(); var jw = gson.newJsonWriter(writer)) {
+        try (var writer = new StringWriter(); var jw = new JsonWriter(writer)) {
+            jw.setIndent(isPrettyPrinting ? "  " : "");
+            jw.setHtmlSafe(false);
+            jw.setLenient(true);
+            jw.setSerializeNulls(true);
             convert(jw, element);
             return writer.toString();
         } catch (Exception e) {
+            StringUtilities.LOGGER.error("An unexpected exception occurred: {}.", e.getClass().getSimpleName(), e);
             return null;
         }
     }
