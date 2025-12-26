@@ -2,7 +2,6 @@ package net.myitian.string_utilities_mod.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.*;
 import it.unimi.dsi.fastutil.chars.CharOpenHashSet;
 import it.unimi.dsi.fastutil.chars.CharSet;
@@ -10,35 +9,65 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.NbtPathArgument;
 import net.minecraft.commands.arguments.NbtTagArgument;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.commands.data.DataCommands;
 import net.minecraft.util.Tuple;
 import net.myitian.string_utilities_mod.StringUtilities;
+import net.myitian.string_utilities_mod.commands.sources.FromDirectNbtSource;
+import net.myitian.string_utilities_mod.commands.sources.FromPathNbtSource;
+import net.myitian.string_utilities_mod.commands.sources.NbtSource;
+import net.myitian.string_utilities_mod.commands.sources.ValueNbtSource;
 
 import java.util.function.BiFunction;
 
 public final class StringCommandCore {
     public static final DynamicCommandExceptionType EXPECTED_LIST_EXCEPTION =
-        new DynamicCommandExceptionType(nbt -> Component.translatable("commands.data.modify.expected_list", nbt));
-    public static final SimpleCommandExceptionType TOO_FEW_ARGUMENT_EXCEPTION = // Too few arguments
-        new SimpleCommandExceptionType(Component.translatable("commands.string-utilities.string.too_few_arguments"));
-    public static final DynamicCommandExceptionType INVALID_CHAR_ARRAY_EXCEPTION = // Invalid char array: %s
-        new DynamicCommandExceptionType(name -> Component.translatable("commands.string-utilities.string.invalid_char_array", name));
-    public static final DynamicCommandExceptionType EXPECTED_STRING_EXCEPTION = // Invalid argument type: %s, expected String
-        new DynamicCommandExceptionType(name -> Component.translatable("commands.string-utilities.string.unexpected_type", name, StringTag.TYPE.getPrettyName()));
-    public static final DynamicCommandExceptionType EXPECTED_INT_EXCEPTION = // Invalid argument type: %s, expected Int
-        new DynamicCommandExceptionType(name -> Component.translatable("commands.string-utilities.string.unexpected_type", name, IntTag.TYPE.getPrettyName()));
-
-    public static final Dynamic2CommandExceptionType INTEGER_TOO_LOW =
-        new Dynamic2CommandExceptionType((found, min) -> Component.translatable("argument.integer.low", min, found));
-    public static final Dynamic2CommandExceptionType INTEGER_TOO_HIGH =
-        new Dynamic2CommandExceptionType((found, max) -> Component.translatable("argument.integer.big", max, found));
-    public static final Dynamic3CommandExceptionType INTEGER_NOT_IN_RANGE_2 =
-        new Dynamic3CommandExceptionType((found, range0, range1) -> Component.translatable("argument.string-utilities.integer.not_in_range", found, range0, range1));
+        new DynamicCommandExceptionType(nbt -> Component.translatable(
+            "commands.data.modify.expected_list",
+            nbt));
+    public static final SimpleCommandExceptionType TOO_FEW_ARGUMENT_EXCEPTION =
+        new SimpleCommandExceptionType(Component.translatableWithFallback(
+            "commands.string_utilities.string.too_few_arguments",
+            "Too few arguments"));
+    public static final DynamicCommandExceptionType INVALID_CHAR_ARRAY_EXCEPTION =
+        new DynamicCommandExceptionType(name -> Component.translatableWithFallback(
+            "commands.string_utilities.string.invalid_char_array",
+            "Invalid char array: %s",
+            name));
+    public static final DynamicCommandExceptionType EXPECTED_STRING_EXCEPTION =
+        new DynamicCommandExceptionType(name -> Component.translatableWithFallback(
+            "commands.string_utilities.string.unexpected_type",
+            "Invalid argument type: %s, expected %s",
+            name,
+            StringTag.TYPE.getPrettyName()));
+    public static final DynamicCommandExceptionType EXPECTED_INT_EXCEPTION =
+        new DynamicCommandExceptionType(name -> Component.translatableWithFallback(
+            "commands.string_utilities.string.unexpected_type",
+            "Invalid argument type: %s, expected %s",
+            name,
+            IntTag.TYPE.getPrettyName()));
+    public static final Dynamic2CommandExceptionType INTEGER_TOO_LOW_EXCEPTION =
+        new Dynamic2CommandExceptionType((found, min) -> Component.translatable(
+            "argument.integer.low",
+            min,
+            found));
+    public static final Dynamic2CommandExceptionType INTEGER_TOO_HIGH_EXCEPTION =
+        new Dynamic2CommandExceptionType((found, max) -> Component.translatable(
+            "argument.integer.big",
+            max,
+            found));
+    public static final Dynamic3CommandExceptionType INTEGER_NOT_IN_RANGE_2_EXCEPTION =
+        new Dynamic3CommandExceptionType((found, range0, range1) -> Component.translatableWithFallback(
+            "argument.string_utilities.integer.not_in_range",
+            "Integer %s is not in range %s and %s",
+            found,
+            range0,
+            range1));
+    public static final SimpleCommandExceptionType STRING_EMPTY_EXCEPTION =
+        new SimpleCommandExceptionType(Component.translatableWithFallback(
+            "argument.string_utilities.string.empty",
+            "String cannot be empty"));
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         var stringCommand = Commands.literal("string")
@@ -328,21 +357,21 @@ public final class StringCommandCore {
         ArgumentBuilder<CommandSourceStack, ?> argument,
         String sourcePathName,
         String valueName,
-        BiFunction<ArgumentBuilder<CommandSourceStack, ?>, SourceGetter, ArgumentBuilder<CommandSourceStack, ?>> argumentAdder) {
+        BiFunction<ArgumentBuilder<CommandSourceStack, ?>, NbtSource, ArgumentBuilder<CommandSourceStack, ?>> argumentAdder) {
         for (var source : DataCommands.SOURCE_PROVIDERS) {
             argument.then(source.wrap(Commands.literal("from"),
-                innerBuilder -> argumentAdder.apply(innerBuilder, new FromWithoutPathSourceGetter(source))
+                innerBuilder -> argumentAdder.apply(innerBuilder, new FromDirectNbtSource(source))
                     .then(argumentAdder.apply(Commands.argument(sourcePathName, NbtPathArgument.nbtPath()),
-                        new FromWithPathSourceGetter(source, sourcePathName)))));
+                        new FromPathNbtSource(source, sourcePathName)))));
         }
         argument.then(Commands.literal("value")
-            .then(argumentAdder.apply(Commands.argument(valueName, NbtTagArgument.nbtTag()), new ValueSourceGetter(valueName))));
+            .then(argumentAdder.apply(Commands.argument(valueName, NbtTagArgument.nbtTag()), new ValueNbtSource(valueName))));
         return argument;
     }
 
     public static ArgumentBuilder<CommandSourceStack, ?> addOneInZeroOutArgument(
         String name,
-        StringCommandExec command) {
+        StringCommandFunc command) {
         return addSource(Commands.literal(name),
             "sourcePath",
             "value",
@@ -350,12 +379,12 @@ public final class StringCommandCore {
                 ctx -> command.apply(new StringCommandContext(ctx,
                     null,
                     null,
-                    source.CreatePair(ctx)))));
+                    source.createPair(ctx)))));
     }
 
     public static ArgumentBuilder<CommandSourceStack, ?> addOneInOneOutArgument(
         String name,
-        StringCommandExec command) {
+        StringCommandFunc command) {
         return addTarget(Commands.literal(name),
             (builder, target) -> addSource(builder,
                 "sourcePath",
@@ -364,7 +393,7 @@ public final class StringCommandCore {
                     ctx -> command.apply(new StringCommandContext(ctx,
                         target.access(ctx),
                         NbtPathArgument.getPath(ctx, "targetPath"),
-                        source.CreatePair(ctx))))));
+                        source.createPair(ctx))))));
     }
 
     public static ArgumentBuilder<CommandSourceStack, ?> addOneInOneOptionalInOneOutArgument(
@@ -373,7 +402,7 @@ public final class StringCommandCore {
         String valueName0,
         String sourcePathName1,
         String valueName1,
-        StringCommandExec command) {
+        StringCommandFunc command) {
         return addTarget(Commands.literal(name),
             (builder, target) -> addSource(builder,
                 sourcePathName0,
@@ -382,15 +411,15 @@ public final class StringCommandCore {
                     innerBuilder.executes(ctx -> command.apply(new StringCommandContext(ctx,
                         target.access(ctx),
                         NbtPathArgument.getPath(ctx, "targetPath"),
-                        source0.CreatePair(ctx)))),
+                        source0.createPair(ctx)))),
                     sourcePathName1,
                     valueName1,
                     (inner2Builder, source1) -> inner2Builder.executes(
                         ctx -> command.apply(new StringCommandContext(ctx,
                             target.access(ctx),
                             NbtPathArgument.getPath(ctx, "targetPath"),
-                            source0.CreatePair(ctx),
-                            source1.CreatePair(ctx)))))));
+                            source0.createPair(ctx),
+                            source1.createPair(ctx)))))));
     }
 
     public static ArgumentBuilder<CommandSourceStack, ?> addTwoInZeroOutArgument(
@@ -399,7 +428,7 @@ public final class StringCommandCore {
         String valueName0,
         String sourcePathName1,
         String valueName1,
-        StringCommandExec command) {
+        StringCommandFunc command) {
         return addSource(Commands.literal(name),
             sourcePathName0,
             valueName0,
@@ -410,8 +439,8 @@ public final class StringCommandCore {
                     ctx -> command.apply(new StringCommandContext(ctx,
                         null,
                         null,
-                        source0.CreatePair(ctx),
-                        source1.CreatePair(ctx))))));
+                        source0.createPair(ctx),
+                        source1.createPair(ctx))))));
     }
 
     public static ArgumentBuilder<CommandSourceStack, ?> addTwoInOneOutArgument(
@@ -420,7 +449,7 @@ public final class StringCommandCore {
         String valueName0,
         String sourcePathName1,
         String valueName1,
-        StringCommandExec command) {
+        StringCommandFunc command) {
         return addTarget(Commands.literal(name),
             (builder, target) -> addSource(builder,
                 sourcePathName0,
@@ -432,8 +461,8 @@ public final class StringCommandCore {
                         ctx -> command.apply(new StringCommandContext(ctx,
                             target.access(ctx),
                             NbtPathArgument.getPath(ctx, "targetPath"),
-                            source0.CreatePair(ctx),
-                            source1.CreatePair(ctx)))))));
+                            source0.createPair(ctx),
+                            source1.createPair(ctx)))))));
     }
 
     public static ArgumentBuilder<CommandSourceStack, ?> addTwoInOneOptionalInZeroOutArgument(
@@ -444,7 +473,7 @@ public final class StringCommandCore {
         String valueName1,
         String sourcePathName2,
         String valueName2,
-        StringCommandExec command) {
+        StringCommandFunc command) {
         return addSource(Commands.literal(name),
             sourcePathName0,
             valueName0,
@@ -455,17 +484,17 @@ public final class StringCommandCore {
                     inner1Builder.executes(ctx -> command.apply(new StringCommandContext(ctx,
                         null,
                         null,
-                        source0.CreatePair(ctx),
-                        source1.CreatePair(ctx)))),
+                        source0.createPair(ctx),
+                        source1.createPair(ctx)))),
                     sourcePathName2,
                     valueName2,
                     (inner2Builder, source2) -> inner2Builder.executes(
                         ctx -> command.apply(new StringCommandContext(ctx,
                             null,
                             null,
-                            source0.CreatePair(ctx),
-                            source1.CreatePair(ctx),
-                            source2.CreatePair(ctx)))))));
+                            source0.createPair(ctx),
+                            source1.createPair(ctx),
+                            source2.createPair(ctx)))))));
     }
 
     public static ArgumentBuilder<CommandSourceStack, ?> addTwoInOneOptionalInOneOutArgument(
@@ -476,7 +505,7 @@ public final class StringCommandCore {
         String valueName1,
         String sourcePathName2,
         String valueName2,
-        StringCommandExec command) {
+        StringCommandFunc command) {
         return addTarget(Commands.literal(name),
             (builder, target) -> addSource(builder,
                 sourcePathName0,
@@ -488,17 +517,17 @@ public final class StringCommandCore {
                         inner2Builder.executes(ctx -> command.apply(new StringCommandContext(ctx,
                             target.access(ctx),
                             NbtPathArgument.getPath(ctx, "targetPath"),
-                            source0.CreatePair(ctx),
-                            source1.CreatePair(ctx)))),
+                            source0.createPair(ctx),
+                            source1.createPair(ctx)))),
                         sourcePathName2,
                         valueName2,
                         (inner3Builder, source2) -> inner3Builder.executes(
                             ctx -> command.apply(new StringCommandContext(ctx,
                                 target.access(ctx),
                                 NbtPathArgument.getPath(ctx, "targetPath"),
-                                source0.CreatePair(ctx),
-                                source1.CreatePair(ctx),
-                                source2.CreatePair(ctx))))))));
+                                source0.createPair(ctx),
+                                source1.createPair(ctx),
+                                source2.createPair(ctx))))))));
     }
 
     public static ArgumentBuilder<CommandSourceStack, ?> addThreeInOneOutArgument(
@@ -509,7 +538,7 @@ public final class StringCommandCore {
         String valueName1,
         String sourcePathName2,
         String valueName2,
-        StringCommandExec command) {
+        StringCommandFunc command) {
         return addTarget(Commands.literal(name),
             (builder, target) -> addSource(builder,
                 sourcePathName0,
@@ -524,95 +553,8 @@ public final class StringCommandCore {
                             ctx -> command.apply(new StringCommandContext(ctx,
                                 target.access(ctx),
                                 NbtPathArgument.getPath(ctx, "targetPath"),
-                                source0.CreatePair(ctx),
-                                source1.CreatePair(ctx),
-                                source2.CreatePair(ctx))))))));
-    }
-
-    public static void checkInt(int value, int min, int max) throws CommandSyntaxException {
-        if (value < min) {
-            throw INTEGER_TOO_LOW.create(value, min);
-        } else if (value > max) {
-            throw INTEGER_TOO_HIGH.create(value, max);
-        }
-    }
-
-    public static void checkInt(int value, int range0min, int range0max, int range1min, int range1max) throws CommandSyntaxException {
-        var min = Math.min(range0min, range1min);
-        var max = Math.max(range0max, range1max);
-        if (value < min) {
-            throw INTEGER_TOO_LOW.create(value, min);
-        } else if (value > max) {
-            throw INTEGER_TOO_HIGH.create(value, max);
-        } else if ((value > range0max && value < range1min) || (value > range1max && value < range0min)) {
-            throw INTEGER_NOT_IN_RANGE_2.create(value,
-                "[" + range0min + ".." + range0max + "]",
-                "[" + range1min + ".." + range1max + "]");
-        }
-    }
-
-    @FunctionalInterface
-    public interface StringCommandExec {
-        int apply(StringCommandContext ctx) throws CommandSyntaxException;
-    }
-
-    public abstract static class SourceGetter {
-        public abstract Tag getSourceElement(CommandContext<CommandSourceStack> context) throws CommandSyntaxException;
-
-        public abstract NbtPathArgument.NbtPath getSourcePath(CommandContext<CommandSourceStack> context) throws CommandSyntaxException;
-
-        public Tuple<Tag, NbtPathArgument.NbtPath> CreatePair(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-            return new Tuple<>(getSourceElement(context), getSourcePath(context));
-        }
-    }
-
-    public final static class FromWithoutPathSourceGetter extends SourceGetter {
-        private final DataCommands.DataProvider source;
-
-        public FromWithoutPathSourceGetter(DataCommands.DataProvider source) {
-            this.source = source;
-        }
-
-        public Tag getSourceElement(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-            return source.access(context).getData();
-        }
-
-        public NbtPathArgument.NbtPath getSourcePath(CommandContext<CommandSourceStack> context) {
-            return null;
-        }
-    }
-
-    public final static class FromWithPathSourceGetter extends SourceGetter {
-        private final DataCommands.DataProvider source;
-        private final String sourcePathName;
-
-        public FromWithPathSourceGetter(DataCommands.DataProvider source, String sourcePathName) {
-            this.source = source;
-            this.sourcePathName = sourcePathName;
-        }
-
-        public Tag getSourceElement(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-            return source.access(context).getData();
-        }
-
-        public NbtPathArgument.NbtPath getSourcePath(CommandContext<CommandSourceStack> context) {
-            return NbtPathArgument.getPath(context, sourcePathName);
-        }
-    }
-
-    public static class ValueSourceGetter extends SourceGetter {
-        private final String valueName;
-
-        public ValueSourceGetter(String valueName) {
-            this.valueName = valueName;
-        }
-
-        public Tag getSourceElement(CommandContext<CommandSourceStack> context) {
-            return NbtTagArgument.getNbtTag(context, valueName);
-        }
-
-        public NbtPathArgument.NbtPath getSourcePath(CommandContext<CommandSourceStack> context) {
-            return null;
-        }
+                                source0.createPair(ctx),
+                                source1.createPair(ctx),
+                                source2.createPair(ctx))))))));
     }
 }

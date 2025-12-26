@@ -23,8 +23,8 @@ jobs:
         with:
           name: Artifacts - Fabric
           path: fabric/build/libs/
-      - name: capture build artifacts - forgelike
+      - name: capture build artifacts - forge-like
         uses: actions/upload-artifact@v4
         with:
           name: Artifacts - ForgeLike
-          path: forgelike/build/libs/
+          path: forge-like/build/libs/

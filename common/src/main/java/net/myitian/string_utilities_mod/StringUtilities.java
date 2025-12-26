@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 import java.util.function.Predicate;
 
 public final class StringUtilities {
-    public static final String MOD_ID = "string-utilities";
+    public static final String MOD_ID = "string_utilities";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     private static Predicate<CommandSourceStack> hasElevatedPermissions = null;
 

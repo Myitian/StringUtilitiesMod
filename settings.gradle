@@ -11,5 +11,10 @@ pluginManagement {
 include "common"
 include "fabric"
 include "forge"
+include "forge-like"
 include "neoforge"
-include "forgelike"
+project(":common").projectDir.mkdirs()
+project(":fabric").projectDir.mkdirs()
+project(":forge").projectDir.mkdirs()
+project(":forge-like").projectDir.mkdirs()
+project(":neoforge").projectDir.mkdirs()

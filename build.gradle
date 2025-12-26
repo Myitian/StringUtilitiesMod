@@ -17,15 +17,36 @@ subprojects {
             parchment("org.parchmentmc.data:parchment-${project.parchment_mappings}@zip")
         }
     }
+
+    version = "${project.mod_version}-${project.name}-${project.version_id}"
+
+    processResources {
+        def props = [
+                mod_id                                : project.mod_id,
+                mod_version                           : project.version,
+                mod_name                              : project.mod_name,
+                mod_description                       : project.mod_description,
+                mod_license                           : project.mod_license,
+                mod_author                            : project.mod_author,
+                mod_source                            : project.mod_source,
+                maven_group                           : project.maven_group,
+                supported_minecraft_version_fabric    : project.supported_minecraft_version_fabric,
+                supported_minecraft_version_forge     : project.supported_minecraft_version_forge,
+                supported_minecraft_version_neoforge  : project.supported_minecraft_version_neoforge,
+        ]
+        inputs.properties props
+
+        filesMatching(["pack.mcmeta", "fabric.mod.json", "META-INF/*mods.toml"]) {
+            expand props
+        }
+    }
 }
 
 allprojects {
     apply plugin: "java"
     apply plugin: "architectury-plugin"
-    apply plugin: "maven-publish"
 
     group = project.maven_group
-    version = "${project.mod_version}-${project.name}-${project.version_id}"
     base {
         archivesName = project.mod_id
     }
@@ -45,26 +66,5 @@ allprojects {
 
     java {
         withSourcesJar()
-    }
-
-    processResources {
-        def props = [
-                mod_id                              : project.mod_id,
-                mod_version                         : project.version,
-                mod_name                            : project.mod_name,
-                mod_description                     : project.mod_description,
-                mod_license                         : project.mod_license,
-                mod_author                          : project.mod_author,
-                mod_source                          : project.mod_source,
-                maven_group                         : project.maven_group,
-                supported_minecraft_version_fabric  : project.supported_minecraft_version_fabric,
-                supported_minecraft_version_forge   : project.supported_minecraft_version_forge,
-                supported_minecraft_version_neoforge: project.supported_minecraft_version_neoforge,
-        ]
-        inputs.properties props
-
-        filesMatching(["pack.mcmeta", "fabric.mod.json", "META-INF/*mods.toml"]) {
-            expand props
-        }
     }
 }
