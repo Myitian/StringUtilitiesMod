@@ -28,11 +28,11 @@ jobs:
         with:
           name: Artifacts - Forge
           path: forge/build/libs/
-      - name: capture build artifacts - forge-1.20.6
+      - name: capture build artifacts - forge-like
         uses: actions/upload-artifact@v4
         with:
-          name: Artifacts - Forge 1.20.6
-          path: forge-1.20.6/build/libs/
+          name: Artifacts - ForgeLike
+          path: forge-like/build/libs/
       - name: capture build artifacts - neoforge
         uses: actions/upload-artifact@v4
         with:
