@@ -1,5 +1,11 @@
 # String Utilities Mod
 
+<img src="common/src/main/resources/logo.png" alt="logo" width="128"/>
+
+[![CurseForge Downloads](https://img.shields.io/curseforge/dt/1156276?style=for-the-badge&logo=curseforge&label=CurseForge%20Downloads&color=F16436)](https://www.curseforge.com/minecraft/mc-mods/string-utilities)\
+[![Modrinth Downloads](https://img.shields.io/modrinth/dt/VE8pf7zL?style=for-the-badge&logo=modrinth&label=Modrinth%20Downloads&color=00AF5C)](https://modrinth.com/mod/string-utilities)\
+[![MC百科](https://img.shields.io/badge/mcmod.cn-MC%E7%99%BE%E7%A7%91-58b6d8?style=for-the-badge)](https://www.mcmod.cn/class/13733.html)
+
 A mod that provides more NBT string operations.\
 一个提供更多 NBT 字符串操作的模组。
 
