@@ -17,6 +17,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.commands.data.DataCommands;
 import net.minecraft.util.Tuple;
+import net.myitian.string_utilities_mod.StringUtilities;
 
 import java.util.function.BiFunction;
 
@@ -41,7 +42,7 @@ public final class StringCommandCore {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         var stringCommand = Commands.literal("string")
-            .requires(source -> source.hasPermission(2))
+            .requires(StringUtilities.hasElevatedPermissions())
             .then(addOneInZeroOutArgument("isBlank", StringCommands::isBlank))
             .then(addOneInZeroOutArgument("isEmpty", StringCommands::isEmpty))
             .then(addOneInZeroOutArgument("length", StringCommands::length))
