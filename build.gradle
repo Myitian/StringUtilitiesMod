@@ -10,41 +10,18 @@ architectury {
 subprojects {
     apply plugin: "dev.architectury.loom"
 
+    if (project.name == "forge-1.20.6") {
+        return
+    }
+
+    version = "${project.mod_version}-${project.name}-${project.version_id}"
+
     dependencies {
         minecraft "com.mojang:minecraft:${project.minecraft_version}"
         mappings loom.layered {
             officialMojangMappings()
             parchment("org.parchmentmc.data:parchment-${project.parchment_mappings}@zip")
         }
-    }
-}
-
-allprojects {
-    apply plugin: "java"
-    apply plugin: "architectury-plugin"
-    apply plugin: "maven-publish"
-
-    group = project.maven_group
-    version = "${project.mod_version}-${project.name}-${project.version_id}"
-    base {
-        archivesName = project.mod_id
-    }
-
-    repositories {
-        maven { url "https://maven.shedaniel.me" }
-        maven { url "https://maven.architectury.dev" }
-        maven { url "https://maven.neoforged.net" }
-        maven { url "https://maven.parchmentmc.org" }
-        maven { url "https://maven.terraformersmc.com" }
-    }
-
-    tasks.withType(JavaCompile).configureEach {
-        options.encoding = "UTF-8"
-        options.release = 17
-    }
-
-    java {
-        withSourcesJar()
     }
 
     processResources {
@@ -66,5 +43,32 @@ allprojects {
         filesMatching(["pack.mcmeta", "fabric.mod.json", "META-INF/*mods.toml"]) {
             expand props
         }
+    }
+}
+
+allprojects {
+    apply plugin: "java"
+    apply plugin: "architectury-plugin"
+
+    group = project.maven_group
+    base {
+        archivesName = project.mod_id
+    }
+
+    repositories {
+        maven { url "https://maven.shedaniel.me" }
+        maven { url "https://maven.architectury.dev" }
+        maven { url "https://maven.neoforged.net" }
+        maven { url "https://maven.parchmentmc.org" }
+        maven { url "https://maven.terraformersmc.com" }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = "UTF-8"
+        options.release = 17
+    }
+
+    java {
+        withSourcesJar()
     }
 }

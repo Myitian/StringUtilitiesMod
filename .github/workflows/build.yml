@@ -32,7 +32,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Artifacts - Forge 1.20.6
-          path: forge/build/libs/
+          path: forge-1.20.6/build/libs/
       - name: capture build artifacts - neoforge
         uses: actions/upload-artifact@v4
         with:
