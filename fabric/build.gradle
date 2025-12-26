@@ -28,7 +28,7 @@ dependencies {
 }
 
 shadowJar {
-    exclude "architectury.common.json"
+    exclude("architectury.common.json", "architectury_inject*/**")
     configurations = [project.configurations.shadowCommon]
     archiveClassifier = "dev-shadow"
 }

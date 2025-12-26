@@ -275,10 +275,8 @@ public final class StringCommandCore {
         var tc = getTag(ctx.sources[1]);
         var trimChars = new CharOpenHashSet();
         if (tc instanceof StringTag str) {
-            for (var c : str.getAsString().toCharArray()) {
-                trimChars.add(c);
-            }
-        } else if (tc instanceof ListTag list && list.getElementType() == Tag.TAG_STRING) {
+            trimChars.addAll(str.getAsString().toCharArray());
+        } else if (tc instanceof ListTag list) {
             var len = list.size();
             for (var i = 0; i < len; i++) {
                 var str = list.get(i).getAsString();

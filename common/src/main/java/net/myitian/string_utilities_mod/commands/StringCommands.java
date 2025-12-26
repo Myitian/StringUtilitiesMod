@@ -1,7 +1,6 @@
 package net.myitian.string_utilities_mod.commands;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import it.unimi.dsi.fastutil.chars.CharSet;
 import net.minecraft.nbt.*;
 import net.myitian.string_utilities_mod.JsonNbt;
 import net.myitian.string_utilities_mod.StringExtension;
@@ -361,7 +360,7 @@ public final class StringCommands {
             if (s.isEmpty()) {
                 result = "";
             } else {
-                var chars = str.getAsString().toCharArray();
+                var chars = s.toCharArray();
                 var sb = new StringBuilder((chars.length - 1) * delimiter.length() + 1);
                 sb.append(chars[0]);
                 for (var i = 1; i < chars.length; ) {
