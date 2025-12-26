@@ -52,7 +52,6 @@ public final class StringCommandCore {
             "Invalid argument type: %s, expected %s",
             name,
             IntTag.TYPE.getPrettyName()));
-
     public static final Dynamic2CommandExceptionType INTEGER_TOO_LOW_EXCEPTION =
         new Dynamic2CommandExceptionType((found, min) -> Component.translatable(
             "argument.integer.low",
