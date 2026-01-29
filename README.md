@@ -20,7 +20,7 @@ The `target` and `source` parts are similar to what follows the `data modify` co
 
 - `/string isEmpty value ""` returns 1
 - `/string indexOf value "asdfghjkl" value "qwerty"` returns -1
-- `/string escape storage a:b c value '\'quote"slash\\'` stores `'quote\"slash\\` into `foo:bar/baz`
+- `/string escape storage a:b c value '\'quote"slash\\'` stores `'quote\"slash\\` into `a:b/c`
 - `/string strip storage foo:bar baz value "  a 123   "` stores `a 123` into `foo:bar/baz`
 - `/string concat2 storage a b from entity @s SelectedItem.id from entity @s Inventory[0].id`
 - `/string join storage test playerUUID from value "~" from @s UUID`
